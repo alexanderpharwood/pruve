@@ -4,7 +4,7 @@
 		"description": "",
 		"main": "index.js",
 		"scripts": {
-			"test": "npm run build; mocha src/tests",
+			"test": "mocha src/tests",
 			"build": "node src/build.js"
 		},
 		"author": "",
