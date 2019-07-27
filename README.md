@@ -2,14 +2,14 @@
 
 Declarative JavaScript data validation
 
-![npm](https://img.shields.io/npm/v/jimcares.svg)
-[![Build Status](https://travis-ci.org/alexanderpharwood/jimcares.svg?branch=master)](https://travis-ci.org/alexanderpharwood/jimcares)
-![npm bundle size](https://img.shields.io/bundlephobia/min/jimcares.svg)
-![npm](https://img.shields.io/npm/dm/jimcares.svg)
-![GitHub last commit](https://img.shields.io/github/last-commit/alexanderpharwood/jimcares.svg)
-![GitHub issues](https://img.shields.io/github/issues/alexanderpharwood/jimcares.svg)  
+![npm](https://img.shields.io/npm/v/pruve.svg)
+[![Build Status](https://travis-ci.org/alexanderpharwood/pruve.svg?branch=master)](https://travis-ci.org/alexanderpharwood/pruve)
+![npm bundle size](https://img.shields.io/bundlephobia/min/pruve.svg)
+![npm](https://img.shields.io/npm/dm/pruve.svg)
+![GitHub last commit](https://img.shields.io/github/last-commit/alexanderpharwood/pruve.svg)
+![GitHub issues](https://img.shields.io/github/issues/alexanderpharwood/pruve.svg)  
 
-Pruve is a declarative data validator which ...
+Pruve is a declarative data validator which allows for validation of individual variables or or objects containing data for validation, as you would find with request objects.
 
 
 ## Usage
@@ -21,7 +21,7 @@ Pruve is a declarative data validator which ...
 
 #### Npm
 ```
-npm install pruve --save
+npm install pruve
 ```
 
 #### Yarn
@@ -38,24 +38,47 @@ import pruve from 'pruve';
 ```
 
 ## Trying and catching
-Pruve does not return boolean values telling you whether or not validation has been successful. Instead, it throws a custom ValidationException error which should be caught. Here is a very crude example:
+Pruve does not return boolean values telling you whether or not validation has been successful. Instead, it throws a custom ValidationException error which should be caught. Here is a very crude example using Express:
 ```
-function ((request, res) => {
+app.post('/users', (req, res) => {
 	try {
-		pruve(request).has('a_required_property');
-	} catch (exception) {
-		res.render(422);
-	}
-}
+  	  pruve(req.body.name).string().max(255);
+    } catch (exception) {
+  	  res.render(422);
+    }
+})
+
 ```
+
+You can also 
 ## API
 
 #### pruve()
-This method, which of course can be named anything you like (check, validate, etc.), returns an instance of the pruve validator class. Validation methods can be chained on to it.
-**Parameter** {mixed}  
+This method, which of course can be named anything you like (check, validate, etc.), returns an instance of the pruve validator class. Validation methods can be chained on to it.  
+**Parameter** mixed value
 **Returns** Pruve 
 ```
-pruve('I am a string!')
+pruve('I am a string!')...
+```
+
+#### passes()
+Validate that the values inside the object pass the validation rules.  
+**Parameter** object rules  
+**Returns** void  
+**Throws** ValidationException
+```
+let data = {
+	"name": "Dave",
+	"email": "dave@iamdave.com",
+	"age": 36
+}
+let rules = {
+	"name": "string.max:255.min:2",
+	"email": "email.max:255",
+	"age": "int.min:16.max:120",
+}
+
+pruve(data).passes(rules);
 ```
 
 #### string()
