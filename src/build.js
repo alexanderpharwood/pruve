@@ -5,7 +5,7 @@ const uglify = require('rollup-plugin-uglify').uglify;
 const outputOptions = {
 	file: 'dist/bundle.js',
 	format: 'umd',
-	name: 'Prove'
+	name: 'pruve'
 };
 
 const inputOptions = {
@@ -30,7 +30,7 @@ const inputOptionsMin = {
 const outputOptionsMin = {
 	file: 'dist/bundle.min.js',
 	format: 'umd',
-	name: 'Prove',
+	name: 'pruve',
 	sourcemap: true
 };
 
