@@ -6,7 +6,7 @@ import validateString from './string.js';
 
 export default function(value, limit){
 	if (validateInt(limit) === false) {
-		throw new TypeError('Method max() requires paramater 1 to be an integer');
+		throw new TypeError('Method max() requires parameter 1 to be an integer');
 	}
 	
 	if (validateNumber(value) === true) {
