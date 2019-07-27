@@ -1,7 +1,7 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global.Prove = factory());
+  (global = global || self, global.pruve = factory());
 }(this, function () { 'use strict';
 
   function _typeof(obj) {
@@ -177,7 +177,7 @@
 
   function validateMax (value, limit) {
     if (validateInt(limit) === false) {
-      throw new TypeError('Method max() requires paramater 1 to be an integer');
+      throw new TypeError('Method max() requires parameter 1 to be an integer');
     }
 
     if (validateNumber(value) === true) {
@@ -197,7 +197,7 @@
 
   function validateMin (value, minimum) {
     if (validateInt(minimum) === false) {
-      throw new TypeError('Method min() requires paramater 1 to be an integer');
+      throw new TypeError('Method min() requires parameter 1 to be an integer');
     }
 
     if (validateNumber(value) === true) {
