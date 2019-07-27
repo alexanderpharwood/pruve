@@ -1,0 +1,29 @@
+{
+		"name": "validay",
+		"version": "1.0.0",
+		"description": "",
+		"main": "index.js",
+		"scripts": {
+			"test": "npm run build; mocha src/tests",
+			"build": "node src/build.js"
+		},
+		"author": "",
+		"license": "ISC",
+		"dependencies": {},
+		"devDependencies": {
+				"@babel/core": "^7.4.5",
+				"@babel/preset-env": "^7.4.5",
+				"chai": "^4.2.0",
+				"eslint": "^6.0.1",
+				"karma": "^4.1.0",
+				"karma-chai": "^0.1.0",
+				"karma-chrome-launcher": "^2.2.0",
+				"karma-firefox-launcher": "^1.1.0",
+				"karma-mocha": "^1.3.0",
+				"karma-rollup-preprocessor": "^7.0.0",
+				"mocha": "^6.1.4",
+				"rollup": "^1.16.2",
+				"rollup-plugin-babel": "^4.3.3",
+				"rollup-plugin-uglify": "^6.0.2"
+		}
+}
