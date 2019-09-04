@@ -176,6 +176,7 @@ pruve(func).function()
 
 #### max()
 Validate that the value is less than the given maximum. Applies to numbers, strings (length), arrays (length), and objects (keys).  
+**Param** {int} max  
 **Returns** void  
 **Throws** ValidationException
 ```
@@ -184,6 +185,7 @@ pruve(3).max(4)
 
 #### min()
 Validate that the value is more than the given minimum. Applies to numbers, strings (length), arrays (length), and objects (keys).  
+**Param** {int} min  
 **Returns** void  
 **Throws** ValidationException
 ```
