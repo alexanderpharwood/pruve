@@ -17,6 +17,7 @@ import validateObject from './validators/object.js';
 import validateDefined from './validators/defined.js';
 import validateFunction from './validators/function.js';
 import validateUndefined from './validators/undefined.js';
+import validateFileReader from './validators/fileReader.js';
 import ValidationException from './exceptions/ValidationException.js';
 
 class Pruve {
@@ -165,7 +166,7 @@ class Pruve {
 			return this;
 		}
 		
-		throw new ValidationException('Failed validation: ' + this.value + ' is not a file.');
+		throw new ValidationException('Failed validation: ' + this.value + ' is not a File.');
 	}
 	
 	blob() {
@@ -173,7 +174,15 @@ class Pruve {
 			return this;
 		}
 		
-		throw new ValidationException('Failed validation: ' + this.value + ' is not a blob.');
+		throw new ValidationException('Failed validation: ' + this.value + ' is not a Blob.');
+	}
+	
+	fileReader() {
+		if (validateFileReader(this.value) === true) {
+			return this;
+		}
+		
+		throw new ValidationException('Failed validation: ' + this.value + ' is not a FileReader.');
 	}
 }
 
