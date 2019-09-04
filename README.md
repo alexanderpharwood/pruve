@@ -139,7 +139,7 @@ pruve({foo: 'bar'}).object()
 
 
 #### date()
-Validate that the value is an date object.  
+Validate that the value is a date object.  
 **Returns** void  
 **Throws** ValidationException
 ```
