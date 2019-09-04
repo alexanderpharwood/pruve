@@ -9,7 +9,7 @@ Declarative JavaScript data validation
 ![GitHub last commit](https://img.shields.io/github/last-commit/alexanderpharwood/pruve.svg)
 ![GitHub issues](https://img.shields.io/github/issues/alexanderpharwood/pruve.svg)  
 
-Pruve is a declarative data validator which allows for validation of individual variables or or objects containing data for validation, as you would find with request objects.
+Pruve is a declarative data validator which allows for validation of individual variables or objects containing data for validation, as you would find with request objects.
 
 
 ## Usage
@@ -38,7 +38,7 @@ import pruve from 'pruve';
 ```
 
 ## Trying and catching
-Pruve does not return boolean values telling you whether or not validation has been successful. Instead, it throws a custom ValidationException error which should be caught. Here is a very crude example using Express:
+Pruve does not return boolean values telling you whether or not validation has been successful. Instead, it throws a ValidationException error which should be caught. Here is a very crude example using Express:
 ```
 app.post('/users', (req, res) => {
 	try {
@@ -49,12 +49,10 @@ app.post('/users', (req, res) => {
 })
 
 ```
-
-You can also 
 ## API
 
 #### pruve()
-This method, which of course can be named anything you like (check, validate, etc.), returns an instance of the pruve validator class. Validation methods can be chained on to it.  
+This method, which of course can be named anything you like (check, validate, etc.), returns an instance of the Pruve validator class. Validation methods can be chained on to it.  
 **Parameter** mixed value
 **Returns** Pruve 
 ```
