@@ -460,6 +460,14 @@
     return failing;
   }
 
+  function validateFileReader (value) {
+    if (typeof FileReader === 'undefined') {
+      throw new ReferenceError('FileReader is undefined');
+    }
+
+    return value instanceof FileReader;
+  }
+
   var Pruve =
   /*#__PURE__*/
   function () {
@@ -628,7 +636,7 @@
           return this;
         }
 
-        throw new ValidationException('Failed validation: ' + this.value + ' is not a file.');
+        throw new ValidationException('Failed validation: ' + this.value + ' is not a File.');
       }
     }, {
       key: "blob",
@@ -637,7 +645,16 @@
           return this;
         }
 
-        throw new ValidationException('Failed validation: ' + this.value + ' is not a blob.');
+        throw new ValidationException('Failed validation: ' + this.value + ' is not a Blob.');
+      }
+    }, {
+      key: "fileReader",
+      value: function fileReader() {
+        if (validateFileReader(this.value) === true) {
+          return this;
+        }
+
+        throw new ValidationException('Failed validation: ' + this.value + ' is not a FileReader.');
       }
     }]);
 
