@@ -235,6 +235,22 @@
     return value instanceof Date;
   }
 
+  function validateFile (value) {
+    if (typeof File === 'undefined') {
+      throw new ReferenceError('File is undefined');
+    }
+
+    return value instanceof File;
+  }
+
+  function validateBlob (value) {
+    if (typeof Blob === 'undefined') {
+      throw new ReferenceError('Blob is undefined');
+    }
+
+    return value instanceof Blob;
+  }
+
   function validateEmail (value) {
     if (validateString(value) === true) {
       var expression = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -604,6 +620,24 @@
         }
 
         throw new ValidationException('Failed validation: ' + this.value + ' does not have property: ' + prop + '.');
+      }
+    }, {
+      key: "file",
+      value: function file() {
+        if (validateFile(this.value) === true) {
+          return this;
+        }
+
+        throw new ValidationException('Failed validation: ' + this.value + ' is not a file.');
+      }
+    }, {
+      key: "blob",
+      value: function blob() {
+        if (validateBlob(this.value) === true) {
+          return this;
+        }
+
+        throw new ValidationException('Failed validation: ' + this.value + ' is not a blob.');
       }
     }]);
 
