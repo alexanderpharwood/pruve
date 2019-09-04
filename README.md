@@ -1,3 +1,4 @@
+
 # Pruve
 
 Declarative JavaScript data validation
@@ -53,7 +54,7 @@ app.post('/users', (req, res) => {
 
 #### pruve()
 This method, which of course can be named anything you like (check, validate, etc.), returns an instance of the Pruve validator class. Validation methods can be chained on to it.  
-**Parameter** mixed value
+**Parameter** mixed value  
 **Returns** Pruve 
 ```
 pruve('I am a string!')...
@@ -85,7 +86,135 @@ Validate that the value is a string.
 **Throws** ValidationException
 ```
 pruve('I am a string!').string()
+```
 
+
+#### bool()
+Validate that the value is a boolean.  
+**Returns** void  
+**Throws** ValidationException
+```
+pruve(true).bool()
+```
+
+#### number()
+Validate that the value is a number.  
+**Returns** void  
+**Throws** ValidationException
+```
+pruve(1000).number()
+```
+
+#### int()
+Validate that the value is an integer.  
+**Returns** void  
+**Throws** ValidationException
+```
+pruve(436).int()
+```
+
+#### float()
+Validate that the value is a float.  
+**Returns** void  
+**Throws** ValidationException
+```
+pruve(3.5).float()
+```
+
+#### array()
+Validate that the value is an array.  
+**Returns** void  
+**Throws** ValidationException
+```
+pruve(['foo', 'bar']).array()
+```
+
+#### object()
+Validate that the value is an object.  
+**Returns** void  
+**Throws** ValidationException
+```
+pruve({foo: 'bar'}).object()
+```
+
+
+#### date()
+Validate that the value is an date object.  
+**Returns** void  
+**Throws** ValidationException
+```
+let dateObj = Date('04/08/1994')
+pruve(dateObj).date()
+```
+
+#### null()
+Validate that the value is null.  
+**Returns** void  
+**Throws** ValidationException
+```
+pruve(null).null()
+```
+
+#### undefined()
+Validate that the value is undefined.  
+**Returns** void  
+**Throws** ValidationException
+```
+pruve(undefined).undefined()
+```
+
+#### function()
+Validate that the value is a function.  
+**Returns** void  
+**Throws** ValidationException
+```
+let func = function() {
+	return 'I am a function!';
+}
+pruve(func).function()
+```
+
+#### max()
+Validate that the value is less than the given maximum. Applies to numbers, strings (length), arrays (length), and objects (keys).  
+**Returns** void  
+**Throws** ValidationException
+```
+pruve(3).max(4)
+```
+
+#### min()
+Validate that the value is more than the given minimum. Applies to numbers, strings (length), arrays (length), and objects (keys).  
+**Returns** void  
+**Throws** ValidationException
+```
+pruve(3).min(2)
+```
+
+#### defined()
+Validate that the value is defined.  
+**Returns** void  
+**Throws** ValidationException
+```
+let defined = 'I am a string!'
+pruve(defined).defined()
+```
+
+#### email()
+Validate that the value is a valid email address.  
+**Returns** void  
+**Throws** ValidationException
+```
+let email = 'test@test.com'
+pruve(email).defined()
+```
+#### has()
+Validate that the object has the given key. Only applicable to objects.  
+**Param** {string}  key  
+**Returns** void  
+**Throws** ValidationException
+```
+let obj = {foo: 'bar'}
+pruve(obj).has('foo')
 ```
 
 More documentation coming soon...
