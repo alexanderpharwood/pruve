@@ -5,6 +5,8 @@ import validateHas from './validators/has.js';
 import validateNull from './validators/null.js';
 import validateBool from './validators/bool.js';
 import validateDate from './validators/date.js';
+import validateFile from './validators/file.js';
+import validateBlob from './validators/blob.js';
 import validateEmail from './validators/email.js';
 import validateFloat from './validators/float.js';
 import validateArray from './validators/array.js';
@@ -18,11 +20,11 @@ import validateUndefined from './validators/undefined.js';
 import ValidationException from './exceptions/ValidationException.js';
 
 class Pruve {
-	constructor(value){
+	constructor(value) {
 		this.value = value;
 	}
 	
-	passes(rules){
+	passes(rules) {
 		let failing = validatePasses(this.value, rules);
 		
 		if (failing.length > 0) {
@@ -94,7 +96,7 @@ class Pruve {
 		throw new ValidationException('Failed validation: ' + this.value + ' is not a date.');
 	}
 	
-	null(){
+	null() {
 		if (validateNull(this.value) === true) {
 			return this;
 		}
@@ -102,7 +104,7 @@ class Pruve {
 		throw new ValidationException('Failed validation: "' + this.value + '" is not null');
 	}
 	
-	undefined(){
+	undefined() {
 		if (validateUndefined(this.value) === true) {
 			return this;
 		}
@@ -110,7 +112,7 @@ class Pruve {
 		throw new ValidationException('Failed validation: "' + this.value + '" is not undefined');
 	}
 	
-	function(){
+	function() {
 		if (validateFunction(this.value) === true) {
 			return this;
 		}
@@ -134,7 +136,7 @@ class Pruve {
 		throw new ValidationException('Failed validation: "' + this.value + '" is less than ' + minimum + '.');
 	}
 	
-	defined(){
+	defined() {
 		if (validateDefined(this.value) === true) {
 			return this;
 		}
@@ -150,12 +152,28 @@ class Pruve {
 		throw new ValidationException('Failed validation: "' + this.value + '" is not a valid email address.');
 	}
 	
-	has(prop){
+	has(prop) {
 		if (validateHas(this.value, prop) === true) {
 			return this;
 		}
 		
 		throw new ValidationException('Failed validation: ' + this.value + ' does not have property: ' + prop + '.');
+	}
+	
+	file() {
+		if (validateFile(this.value) === true) {
+			return this;
+		}
+		
+		throw new ValidationException('Failed validation: ' + this.value + ' is not a file.');
+	}
+	
+	blob() {
+		if (validateBlob(this.value) === true) {
+			return this;
+		}
+		
+		throw new ValidationException('Failed validation: ' + this.value + ' is not a blob.');
 	}
 }
 
