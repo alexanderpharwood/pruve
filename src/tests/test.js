@@ -1,5 +1,8 @@
 const pruve = require('../../dist/bundle.js');
 const expect = require('chai').expect;
+// var Blob = require('./blob-polyfill').Blob;
+// var File = require('./blob-polyfill').File;
+// var FileReader = require('./blob-polyfill').FileReader;
 
 describe('pruve.passes()', function () {
 	it('should pass if all properties pass validation', function () {
@@ -121,6 +124,28 @@ describe('pruve.date()', function () {
 		expect(pruve('Not a date object').date).to.throw(TypeError);
 	});
 });
+
+// @todo Impliment polyfill for node (File, Blob, FileReader, Url)
+
+// describe('pruve.file()', function () {
+// 	it('should pass if the value is a file', function () {
+// 		let file = new File([], "");
+// 		pruve(file).file();
+// 	});
+// 	it('should throw if the value is not a file', function () {
+// 		expect(pruve('Not a file').file).to.throw(TypeError);
+// 	});
+// });
+// 
+// describe('pruve.blob()', function () {
+// 	it('should pass if the value is a Blob', function () {
+// 		let blob = new Blob([1,2,3]);
+// 		pruve(blob).blob();
+// 	});
+// 	it('should throw if the value is not a Blob', function () {
+// 		expect(pruve('Not a file').blob).to.throw(TypeError);
+// 	});
+// });
 
 describe('pruve.max()', function () {
 	it('should, on a string, pass if the length is smaller than, or equal to, the given limit', function () {
