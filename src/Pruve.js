@@ -27,10 +27,11 @@ class Pruve {
 	
 	passes(rules) {
 		let failing = validatePasses(this.value, rules);
-		
-		if (failing.length > 0) {
+		if (Object.keys(failing).length > 0) {			
 			throw new ValidationException(failing);
 		}
+		
+		return this;
 	}
 
 	string() {
