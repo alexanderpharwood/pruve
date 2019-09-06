@@ -1,4 +1,5 @@
 
+
 # Pruve
 
 Declarative JavaScript data validation
@@ -48,8 +49,26 @@ app.post('/users', (req, res) => {
   	  res.render(422);
     }
 })
+```
+
+## ValidationException
+
+If a property or variable fails validation, a ValidationException will be thrown:
 
 ```
+ValidationException {
+	message: 'Validation failed',
+	errors: {
+		name: [
+			'name must be a string'
+		],
+		email: [
+			'email must be a valid email address'
+		]
+	}
+}
+```
+
 ## API
 
 #### pruve()
@@ -75,6 +94,20 @@ let rules = {
 	"name": "string.max:255.min:2",
 	"email": "email.max:255",
 	"age": "int.min:16.max:120",
+}
+
+pruve(data).passes(rules);
+```
+
+You can also do wildcard validation, which will apply to every property in the object being validated, like so:
+```
+let data = {
+	"name": "Dave",
+	"email": "dave@iamdave.com"
+}
+let rules = {
+	"*": "string.max:255.min:2",
+	"email": "email",
 }
 
 pruve(data).passes(rules);
