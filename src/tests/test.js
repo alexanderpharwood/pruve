@@ -32,17 +32,66 @@ describe('pruve.passes()', function () {
 		
 		pruve(values).passes(rules);
 	});
+	it('should pass with wildcard, using an object of values, if all properties pass validation', function () {
+		let values = {
+			"name": "Dave Davidson",
+			"email": "dave@iamdave.com",
+		};
+		
+		let rules = {
+			"*": "string.max:255.min:3",
+		};
+		
+		pruve(values).passes(rules);
+	});
+	it('should pass with wildcard, using an array of values, if all properties pass validation', function () {
+		let values = [];
+		values["name"] = "Dave Davidson";
+		values["email"] = "dave@iamdave.com";
+		
+		let rules = {
+			"*": "string.max:255.min:3",
+		};
+		
+		pruve(values).passes(rules);
+	});
+	it('should structure the failures object keyed by the propery which failed and contain all its failures', function () {
+		let values = {
+			"name": null,
+			"email": "Not an email address",
+		};
+	
+		let rules = {
+			"*": 'string',
+			"name": "max:255.min:3",
+			"email": "email.max:255",
+		};
+		
+		try {
+			pruve(values).passes(rules)
+		} catch (exception) {
+			expect(exception.errors.name).to.include(
+				'name must be a string'
+			);
+			expect(exception.errors.name).to.include(
+				'name must be greater than 3 in length or value'
+			);
+			expect(exception.errors.name).to.include(
+				'name must be less than 255 in length or value'
+			);
+		}
+	});
 	it('should throw with all relevant errors if any properties fail validation', function () {
 		let values = {
-			"name": true,
+			"name": 123,
 			"email": "Not an email address",
 		};
 		
 		let rules = {
-			"name": "string.max:255.min:3",
+			"name": "string",
 			"email": "email.max:255",
 		};
-		
+				
 		expect(function(){ pruve(values).passes(rules) }).to.throw(TypeError);
 	});
 });
