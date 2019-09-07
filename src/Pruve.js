@@ -43,7 +43,7 @@ class Pruve {
 		return this;
 	}
 	
-	try(){
+	try() {
 		if (this.errors.length > 0) {
 			throw new ValidationException(this.value, this.errors);
 		}
