@@ -107,7 +107,8 @@ A list of errors for validation failures
 
 **try()**  
 Assess errors and throw a ValidationException if any are present.  
-**Throws** ValidationException
+**Throws** ValidationException  
+**Returns** Pruve  
 
 **passes()**  
 Validate that the values inside the object pass the validation rules.  
