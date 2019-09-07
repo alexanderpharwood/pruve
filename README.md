@@ -44,7 +44,7 @@ Pruve does not return boolean values telling you whether or not validation has b
 ```
 app.post('/users', (req, res) => {
 	try {
-  	  pruve(req.body.name).string().max(255);
+  	  pruve(req.body.name).string().max(255).try();
     } catch (exception) {
   	  res.render(422);
     }
@@ -57,6 +57,10 @@ If a property or variable fails validation, a ValidationException will be thrown
 
 ```
 ValidationException {
+	value: {
+		name: null,
+		email: 'Not an email address!'
+	},
 	message: 'Validation failed',
 	errors: {
 		name: [
@@ -69,21 +73,37 @@ ValidationException {
 }
 ```
 
-## API
+## The Pruve Object
 
-#### pruve()
-This method, which of course can be named anything you like (check, validate, etc.), returns an instance of the Pruve validator class. Validation methods can be chained on to it.  
-**Parameter** mixed value  
-**Returns** Pruve 
+**constructor( _{value}_ )**  
+A helper method is exposed, which allows for the creation of a Pruve validator instance, for ease of access. Of course, it can be named anything you like (check, validate, etc.). Validation methods can be chained on to it.  
+**Parameter** _{mixed}_ value  
+**Returns** Pruve  
 ```
-pruve('I am a string!')...
+pruve('I am a string!').string()
 ```
 
-#### passes()
-Validate that the values inside the object pass the validation rules.  
-**Parameter** object rules  
-**Returns** void  
+### Properties
+
+**value** _{string}_  
+The value to be validated  
+
+**errors** _{array}_  
+A list of errors for validation failures
+
+---
+
+### Methods
+
+**try()**  
+Assess errors and throw a ValidationException if any are present.  
 **Throws** ValidationException
+
+**passes()**  
+Validate that the values inside the object pass the validation rules.  
+**Parameter** _{object}_ rules  
+**Returns** Pruve  
+
 ```
 let data = {
 	"name": "Dave",
@@ -113,93 +133,93 @@ let rules = {
 pruve(data).passes(rules);
 ```
 
-#### string()
+**string()**  
 Validate that the value is a string.  
-**Returns** void  
-**Throws** ValidationException
+**Returns** Pruve  
+
 ```
 pruve('I am a string!').string()
 ```
 
 
-#### bool()
+**bool()**  
 Validate that the value is a boolean.  
-**Returns** void  
-**Throws** ValidationException
+**Returns** Pruve  
+
 ```
 pruve(true).bool()
 ```
 
-#### number()
+**number()**  
 Validate that the value is a number.  
-**Returns** void  
-**Throws** ValidationException
+**Returns** Pruve  
+
 ```
 pruve(1000).number()
 ```
 
-#### int()
+**int()**  
 Validate that the value is an integer.  
-**Returns** void  
-**Throws** ValidationException
+**Returns** Pruve  
+
 ```
 pruve(436).int()
 ```
 
-#### float()
+**float()**  
 Validate that the value is a float.  
-**Returns** void  
-**Throws** ValidationException
+**Returns** Pruve  
+
 ```
 pruve(3.5).float()
 ```
 
-#### array()
+**array()**  
 Validate that the value is an array.  
-**Returns** void  
-**Throws** ValidationException
+**Returns** Pruve  
+
 ```
 pruve(['foo', 'bar']).array()
 ```
 
-#### object()
+**object()**  
 Validate that the value is an object.  
-**Returns** void  
-**Throws** ValidationException
+**Returns** Pruve  
+
 ```
 pruve({foo: 'bar'}).object()
 ```
 
 
-#### date()
+**date()**  
 Validate that the value is a date object.  
-**Returns** void  
-**Throws** ValidationException
+**Returns** Pruve  
+
 ```
 let dateObj = Date('04/08/1994')
 pruve(dateObj).date()
 ```
 
-#### null()
+**null()**  
 Validate that the value is null.  
-**Returns** void  
-**Throws** ValidationException
+**Returns** Pruve  
+
 ```
 pruve(null).null()
 ```
 
-#### undefined()
+**undefined()**  
 Validate that the value is undefined.  
-**Returns** void  
-**Throws** ValidationException
+**Returns** Pruve  
+
 ```
 pruve(undefined).undefined()
 ```
 
-#### function()
+**function()**  
 Validate that the value is a function.  
-**Returns** void  
-**Throws** ValidationException
+**Returns** Pruve  
+
 ```
 let func = function() {
 	return 'I am a function!';
@@ -207,46 +227,46 @@ let func = function() {
 pruve(func).function()
 ```
 
-#### max()
+**max( _{int}_ )**  
 Validate that the value is less than the given maximum. Applies to numbers, strings (length), arrays (length), and objects (keys).  
-**Param** {int} max  
-**Returns** void  
-**Throws** ValidationException
+**Param** _{int}_ max  
+**Returns** Pruve  
+
 ```
 pruve(3).max(4)
 ```
 
-#### min()
+**min( _{int}_ )**  
 Validate that the value is more than the given minimum. Applies to numbers, strings (length), arrays (length), and objects (keys).  
-**Param** {int} min  
-**Returns** void  
-**Throws** ValidationException
+**Param** _{int}_ min  
+**Returns** Pruve  
+
 ```
 pruve(3).min(2)
 ```
 
-#### defined()
+**defined()**  
 Validate that the value is defined.  
-**Returns** void  
-**Throws** ValidationException
+**Returns** Pruve  
+
 ```
 let defined = 'I am a string!'
 pruve(defined).defined()
 ```
 
-#### email()
+**email()**  
 Validate that the value is a valid email address.  
-**Returns** void  
-**Throws** ValidationException
+**Returns** Pruve  
+
 ```
 let email = 'test@test.com'
 pruve(email).defined()
 ```
-#### has()
+**has( _{string}_ )**  
 Validate that the object has the given key. Only applicable to objects.  
-**Param** {string}  key  
-**Returns** void  
-**Throws** ValidationException
+**Param** _{string}_  key  
+**Returns** Pruve
+
 ```
 let obj = {foo: 'bar'}
 pruve(obj).has('foo')
