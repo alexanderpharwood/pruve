@@ -1,6 +1,6 @@
 {
 		"name": "pruve",
-		"version": "1.0.3",
+		"version": "1.0.4",
 		"description": "Declarative JavaScript data validation",
 		"repository": "https://github.com/alexanderpharwood/pruve.git",
 		"main": "./dist/bundle.js",
