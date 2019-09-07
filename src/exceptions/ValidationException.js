@@ -1,6 +1,7 @@
 export default class ValidationException extends TypeError {
-	constructor(errors){
+	constructor(value, errors){
 		super('Validation failed');
+		this.value = value;
 		this.errors = errors;
 	}
 }
