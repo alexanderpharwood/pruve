@@ -81,7 +81,7 @@ ValidationException {
 }
 ```
 
-As shown above, the passes() method returns an object of errors, keyed by the name op the property which has failed validation.
+As shown above, the passes() method returns an object of errors, keyed by the name of the property which has failed validation, whereas methods which single validation methods return only single errors as strings.
 
 ## The Pruve Object
 
