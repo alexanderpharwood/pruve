@@ -40,7 +40,7 @@ import pruve from 'pruve';
 ```
 
 ## Trying and catching
-Pruve does not return boolean values telling you whether or not validation has been successful. Instead, it throws a ValidationException error which should be caught. Here is a very crude example using Express:
+Pruve does not return boolean values telling you whether or not validation has been successful. Each validator method which fails will add an error to the Pruve object it returns. The try method -- of which more below -- throws a ValidationException error which should be caught. Here is a very crude example using Express:
 ```
 app.post('/users', (req, res) => {
 	try {
@@ -53,25 +53,35 @@ app.post('/users', (req, res) => {
 
 ## ValidationException
 
-If a property or variable fails validation, a ValidationException will be thrown:
+If the try() method is called on a Pruve instacne which contains errors, a ValidationException will be thrown. Here are two examples of how this exception might look:
 
 ```
+pruve(null).string().try()
+// This will throw
 ValidationException {
-	value: {
-		name: null,
-		email: 'Not an email address!'
-	},
+	value: null,
 	message: 'Validation failed',
-	errors: {
-		name: [
-			'name must be a string'
-		],
-		email: [
-			'email must be a valid email address'
-		]
-	}
+	errors: [
+		'null is not a string'
+	]
+}
+
+pruve({name: null}).passes({name: "string"}).try()
+// This will throw
+ValidationException {
+	value: null,
+	message: 'Validation failed',
+	errors: [
+		{
+			name: [
+				'null is not a string'	
+			]
+		}
+	]
 }
 ```
+
+As shown above, the passes() method returns an object of errors, keyed by the name op the property which has failed validation.
 
 ## The Pruve Object
 
