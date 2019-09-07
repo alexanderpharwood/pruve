@@ -281,12 +281,13 @@
   function (_TypeError) {
     _inherits(ValidationException, _TypeError);
 
-    function ValidationException(errors) {
+    function ValidationException(value, errors) {
       var _this;
 
       _classCallCheck(this, ValidationException);
 
       _this = _possibleConstructorReturn(this, _getPrototypeOf(ValidationException).call(this, 'Validation failed'));
+      _this.value = value;
       _this.errors = errors;
       return _this;
     }
@@ -564,6 +565,7 @@
       _classCallCheck(this, Pruve);
 
       this.value = value;
+      this.errors = [];
     }
 
     _createClass(Pruve, [{
@@ -572,7 +574,7 @@
         var failing = validatePasses(this.value, rules);
 
         if (Object.keys(failing).length > 0) {
-          throw new ValidationException(failing);
+          this.errors.push(failing);
         }
 
         return this;
@@ -580,172 +582,179 @@
     }, {
       key: "string",
       value: function string() {
-        if (validateString(this.value) === true) {
-          return this;
+        if (validateString(this.value) !== true) {
+          this.errors.push(this.value + ' is not a string.');
         }
 
-        throw new ValidationException('Failed validation: ' + this.value + ' is not a string.');
+        return this;
+      }
+    }, {
+      key: "try",
+      value: function _try() {
+        if (this.errors.length > 0) {
+          throw new ValidationException(this.value, this.errors);
+        }
       }
     }, {
       key: "bool",
       value: function bool() {
-        if (validateBool(this.value) === true) {
-          return this;
+        if (validateBool(this.value) !== true) {
+          this.errors.push(this.value + ' is not a boolean.');
         }
-        throw new ValidationException('Failed validation: ' + this.value + ' is not a boolean.');
+        return this;
       }
     }, {
       key: "number",
       value: function number() {
-        if (validateNumber(this.value) === true) {
-          return this;
+        if (validateNumber(this.value) !== true) {
+          this.errors.push(this.value + ' is not a number.');
         }
 
-        throw new ValidationException('Failed validation: ' + this.value + ' is not a number.');
+        return this;
       }
     }, {
       key: "int",
       value: function int() {
-        if (validateInt(this.value) === true) {
-          return this;
+        if (validateInt(this.value) !== true) {
+          this.errors.push(this.value + ' is not an integer.');
         }
 
-        throw new ValidationException('Failed validation: ' + this.value + ' is not an integer.');
+        return this;
       }
     }, {
       key: "float",
       value: function float() {
-        if (validateFloat(this.value) === true) {
-          return this;
+        if (validateFloat(this.value) !== true) {
+          this.errors.push(this.value + ' is not a float.');
         }
 
-        throw new ValidationException('Failed validation: ' + this.value + ' is not a float.');
+        return this;
       }
     }, {
       key: "array",
       value: function array() {
-        if (validateArray(this.value) === true) {
-          return this;
+        if (validateArray(this.value) !== true) {
+          this.errors.push(this.value + ' is not an array.');
         }
 
-        throw new ValidationException('Failed validation: ' + this.value + ' is not an array.');
+        return this;
       }
     }, {
       key: "object",
       value: function object() {
-        if (validateObject(this.value) === true) {
-          return this;
+        if (validateObject(this.value) !== true) {
+          this.errors.push(this.value + ' is not an object.');
         }
 
-        throw new ValidationException('Failed validation: ' + this.value + ' is not an object.');
+        return this;
       }
     }, {
       key: "date",
       value: function date() {
-        if (validateDate(this.value) === true) {
-          return this;
+        if (validateDate(this.value) !== true) {
+          this.errors.push(this.value + ' is not a date.');
         }
 
-        throw new ValidationException('Failed validation: ' + this.value + ' is not a date.');
+        return this;
       }
     }, {
       key: "null",
       value: function _null() {
-        if (validateNull(this.value) === true) {
-          return this;
+        if (validateNull(this.value) !== true) {
+          this.errors.push(this.value + '" is not null');
         }
 
-        throw new ValidationException('Failed validation: "' + this.value + '" is not null');
+        return this;
       }
     }, {
       key: "undefined",
       value: function undefined$1() {
-        if (validateUndefined(this.value) === true) {
-          return this;
+        if (validateUndefined(this.value) !== true) {
+          this.errors.push(this.value + '" is not null');
         }
 
-        throw new ValidationException('Failed validation: "' + this.value + '" is not undefined');
+        return this;
       }
     }, {
       key: "function",
       value: function _function() {
-        if (validateFunction(this.value) === true) {
-          return this;
+        if (validateFunction(this.value) !== true) {
+          this.errors.push(this.value + '" is not a function');
         }
 
-        throw new ValidationException('Failed validation: ' + this.value + ' is not a function.');
+        return this;
       }
     }, {
       key: "max",
       value: function max(limit) {
-        if (validateMax(this.value, limit) === true) {
-          return this;
+        if (validateMax(this.value, limit) !== true) {
+          this.errors.push(this.value + '" is greater than ' + limit + '.');
         }
 
-        throw new ValidationException('Failed validation: "' + this.value + '" is greater than ' + limit + '.');
+        return this;
       }
     }, {
       key: "min",
       value: function min(minimum) {
-        if (validateMin(this.value, minimum) === true) {
-          return this;
+        if (validateMin(this.value, minimum) !== true) {
+          this.errors.push(this.value + '" is less than ' + minimum + '.');
         }
 
-        throw new ValidationException('Failed validation: "' + this.value + '" is less than ' + minimum + '.');
+        return this;
       }
     }, {
       key: "defined",
       value: function defined() {
-        if (validateDefined(this.value) === true) {
-          return this;
+        if (validateDefined(this.value) !== true) {
+          this.errors.push(this.value + ' is not defined.');
         }
 
-        throw new ValidationException('Failed validation: ' + this.value + ' is not defined.');
+        return this;
       }
     }, {
       key: "email",
       value: function email() {
-        if (validateEmail(this.value) === true) {
-          return this;
+        if (validateEmail(this.value) !== true) {
+          this.errors.push(this.value + '" is not a valid email address.');
         }
 
-        throw new ValidationException('Failed validation: "' + this.value + '" is not a valid email address.');
+        return this;
       }
     }, {
       key: "has",
       value: function has(prop) {
-        if (validateHas(this.value, prop) === true) {
-          return this;
+        if (validateHas(this.value, prop) !== true) {
+          this.errors.push(this.value + ' does not have property: ' + prop + '.');
         }
 
-        throw new ValidationException('Failed validation: ' + this.value + ' does not have property: ' + prop + '.');
+        return this;
       }
     }, {
       key: "file",
       value: function file() {
-        if (validateFile(this.value) === true) {
-          return this;
+        if (validateFile(this.value) !== true) {
+          this.errors.push(this.value + ' is not a File.');
         }
 
-        throw new ValidationException('Failed validation: ' + this.value + ' is not a File.');
+        return this;
       }
     }, {
       key: "blob",
       value: function blob() {
-        if (validateBlob(this.value) === true) {
-          return this;
+        if (validateBlob(this.value) !== true) {
+          this.errors.push(this.value + ' is not a Blob.');
         }
 
-        throw new ValidationException('Failed validation: ' + this.value + ' is not a Blob.');
+        return this;
       }
     }, {
       key: "fileReader",
       value: function fileReader() {
-        if (validateFileReader(this.value) === true) {
-          return this;
+        if (validateFileReader(this.value) !== true) {
+          this.errors.push(this.value + ' is not a FilReader.');
         }
 
-        throw new ValidationException('Failed validation: ' + this.value + ' is not a FileReader.');
+        return this;
       }
     }]);
 
