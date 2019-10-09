@@ -71,13 +71,11 @@ pruve({name: null}).passes({name: "string"}).try()
 ValidationException {
 	value: null,
 	message: 'Validation failed',
-	errors: [
-		{
+	errors: {
 			name: [
 				'null is not a string'	
 			]
 		}
-	]
 }
 ```
 
@@ -95,7 +93,7 @@ pruve('I am a string!').string()
 
 ### Properties
 
-**value** _{string}_  
+**value** _{mixed}_  
 The value to be validated  
 
 **errors** _{array}_  
@@ -115,7 +113,7 @@ let errors = pruve({name: 123}).passes({name: 'string'}).errors
 // { "name": ['"123" is not a string'] }
 ```
 
-### Custom Error Messages
+## Custom Error Messages
 
 Pruve supports custom error messages. They are handled like so:
 
@@ -328,6 +326,15 @@ Validate that the object has the given key. Only applicable to objects.
 ```
 let obj = {foo: 'bar'}
 pruve(obj).has('foo')
+```
+
+**pattern( _{string}_ )**  
+Validate that the matches the given pattern.  
+**Param** _{string}_  pattern  
+**Returns** Pruve
+
+```
+pruve('6 is my age').pattern('^6')
 ```
 
 More documentation coming soon...
