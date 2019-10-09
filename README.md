@@ -96,10 +96,10 @@ pruve('I am a string!').string()
 **value** _{mixed}_  
 The value to be validated  
 
-**errors** _{array}_  
+**errors** _{array|object}_  
 A list of errors for validation failures
 
-**Note:** All the anonymous validator methods will populate the errors property errors with an array of strings, whereas the passes() method (named validations) will populate the errors property with properties keyed by the validated property which failed. Here's an example:
+**Note:** All the anonymous validator methods will populate the errors property  with an array of strings, whereas the passes() method (named validation) will populate the errors property with properties keyed by the validated property which failed. Here's an example:
 
 Anonymous validators:
 ```
@@ -148,12 +148,15 @@ This will however only appear once in the errors array. This is a good option of
 
 ---
 
-### Methods
+## Methods
 
 **try()**  
 Assess errors and throw a ValidationException if any are present.  
 **Throws** ValidationException  
 **Returns** Pruve  
+
+### Named Validation
+To perform named validation you must use the passes() method, and provide an object with named properties to validate, along with a ruleset. Named validation means the errors property on the Pruve object and ValidationException will be a keyed object rather than an array. Named validation required more code but provides more verbose errors. It also allows for custom error messages.
 
 **passes()**  
 Validate that the values inside the object pass the validation rules.  
@@ -166,8 +169,10 @@ let data = {
 	"email": "dave@iamdave.com",
 	"age": 36
 }
+
+// Your rulesets can be either period-separated strings, or arrays:
 let rules = {
-	"name": "string.max:255.min:2",
+	"name": ["string", "max:255", "min:2"],
 	"email": "email.max:255",
 	"age": "int.min:16.max:120",
 }
@@ -181,6 +186,7 @@ let data = {
 	"name": "Dave",
 	"email": "dave@iamdave.com"
 }
+
 let rules = {
 	"*": "string.max:255.min:2",
 	"email": "email",
@@ -188,6 +194,9 @@ let rules = {
 
 pruve(data).passes(rules);
 ```
+
+### Anonymous Validation
+Anonymous validator methods simply perform validation on the value given in the Pruve constructor. The errors property these methods set on the Pruve object and ValidationException will be an array rather than a keyed object. Anonymous validators require less code but also provide less verbose errors. Neither do they allow for custom error messages.
 
 **string()**  
 Validate that the value is a string.  
@@ -335,6 +344,18 @@ Validate that the matches the given pattern.
 
 ```
 pruve('6 is my age').pattern('^6')
+```
+
+**Note:** when using named validation, pettern does not support period-separated strings. Rules must be provided as an array:
+
+```
+let values = {
+	"name": "Dave"
+}
+
+let rules = {
+	"name": ["string", "max:255", "pattern:[a-zA-Z]"]
+}
 ```
 
 More documentation coming soon...

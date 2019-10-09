@@ -704,7 +704,7 @@
     var failing = {};
 
     for (var prop in rules) {
-      var ruleset = rules[prop].split('.');
+      var ruleset = validateString(rules[prop]) ? rules[prop].split('.') : rules[prop];
 
       if (prop === '*') {
         for (var key in values) {

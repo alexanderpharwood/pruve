@@ -26,7 +26,7 @@ describe('pruve.passes()', function () {
 			"hobbies": "array",
 			"car": "defined",
 			"pets": "has:dog",
-			"random": "pattern:^6"
+			"random": ["pattern:^6"]
 		};
 		
 		pruve(values).passes(rules).try();
@@ -130,5 +130,20 @@ describe('pruve.passes()', function () {
 		expect(errors.email).to.include(
 			'Email must be a valid email address'
 		);
+	});
+	it('should pass with validation rules provided as an array', function () {
+		let values = {
+			"name": "Dave",
+			"email": "test@test.com",
+			"age": 43,
+		};
+		
+		let rules = {
+			"name": ["string", "min:4"],
+			"email": ["email", "max:255", "min:5"],
+			"age": ["min:18", "max:100"],
+		};
+		
+		pruve(values).passes(rules).try();
 	});
 });

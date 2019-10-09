@@ -303,7 +303,7 @@ export default function(values, rules, messages) {
 	var failing = {};
 	
 	for (let prop in rules) {
-		let ruleset = rules[prop].split('.');
+		let ruleset = validateString(rules[prop]) ? rules[prop].split('.') : rules[prop];
 		if (prop === '*') {
 			for (let key in values) {
 				var result = assessValueAgainstRuleset(values[key], key, ruleset, messages);
