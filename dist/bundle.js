@@ -188,7 +188,7 @@
   }
 
   function validateObject (value) {
-    return value && _typeof(value) === 'object' && value.constructor === Object;
+    return value && _typeof(value) === 'object' && value instanceof Object;
   }
 
   function validateString (value) {
