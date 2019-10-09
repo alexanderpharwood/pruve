@@ -11,23 +11,26 @@ import validateArray from './array.js';
 import validateString from './string.js';
 import validateNumber from './number.js';
 import validateObject from './object.js';
+import validateBetween from './between.js';
 import validateDefined from './defined.js';
+import validatePattern from './pattern.js';
 import validateFunction from './function.js';
 import validateUndefined from './undefined.js';
+import ErrorFactory from '../factories/ErrorFactory.js';
 import ValidationException from '../exceptions/ValidationException.js'
 
 function getRuleProperties(rule) {
 	var baseRule = rule,
-		condition = null;
+		conditions = null;
 		
 	if (rule.includes(':')) {
 		baseRule = rule.substring(0, rule.indexOf(':'));
-		condition = rule.substring(rule.indexOf(':') + 1);
+		conditions = rule.substring(rule.indexOf(':') + 1).split(',');
 	}
 	
 	return {
 		rule: baseRule,
-		condition: condition
+		conditions: conditions
 	};
 }
 
@@ -40,90 +43,246 @@ function addError(failing, key, error) {
 	return failing[key];
 }
 
-function assessValueAgainstRuleset(value, key, ruleset) {
+function messageInContext(messages, key, rule) {
+	for (let message in messages) {
+		let mesageKeySplit = message.split('.');
+		
+		let contextMessage = mesageKeySplit.find(function(propertyRule){
+			return propertyRule === rule;
+		});
+		
+		if (typeof contextMessage !== 'undefined' && mesageKeySplit[0] === key) {
+			return messages[message];
+		}
+		
+		if (mesageKeySplit.length === 1 && mesageKeySplit[0] === key) {
+			return messages[message];
+		}
+	}
+	
+	return null;
+}
+
+function assessValueAgainstRuleset(value, key, ruleset, messages) {
 	let failing = [];
 	for (let rule of ruleset) {
 		var ruleProps = getRuleProperties(rule);
 		switch (ruleProps.rule) {
 			case "string":
 				if (validateString(value) === false) {
-					failing[key] = addError(failing, key, key + ' must be a string');
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.stringValidationError(value);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 			case "bool":
 				if (validateBool(value) === false) {
-					failing[key] = addError(failing, key, key + ' must be a boolean');
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.booleanValidationError(value);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 			case "number":
 				if (validateNumber(value) === false) {
-					failing[key] = addError(failing, key, key + ' is not a number');
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.numberValidationError(value);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 			case "int":
 				if (validateInt(value) === false) {
-					failing[key] = addError(failing, key, key + ' must be an integer');
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.intValidationError(value);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 			case "float":
 				if (validateFloat(value) === false) {
-					failing[key] = addError(failing, key, key + ' must be a float');
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.intValidationError(value);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 			
 			case "array":
 				if (validateArray(value) === false) {
-					failing[key] = addError(failing, key, key + ' must be an array');
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.arrayValidationError(value);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 			case "object":
 				if (validateObject(value) === false) {
-					failing[key] = addError(failing, key, key + ' must be an object');
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.objectValidationError(value);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 			case "date":
 				if (validateDate(value) === false) {
-					failing[key] = addError(failing, key, key + ' must be a date');
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.dateValidationError(value);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 			case "null":
 				if (validateNull(value) === false) {
-					failing[key] = addError(failing, key, key + ' must be null');
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.nullValidationError(value);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 			case "undefined":
 				if (validateUndefined(value) === false) {
-					failing[key] = addError(failing, key, key + ' must be undefined');
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.undefinedValidationError(value);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 			case "function":
 				if (validateFunction(value) === false) {
-					failing[key] = addError(failing, key, key + ' must be a function');
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.functionValidationError(value);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 			case "max":
-				if (validateMax(value, parseInt(ruleProps.condition)) === false) {
-					failing[key] = addError(failing, key, key + ' must be less than ' + ruleProps.condition + ' in length or value');
+				if (validateMax(value, parseInt(ruleProps.conditions[0])) === false) {
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.maxValidationError(value, ruleProps.conditions[0]);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 			case "min":
-				if (validateMin(value, parseInt(ruleProps.condition)) === false) {
-					failing[key] = addError(failing, key, key + ' must be greater than ' + ruleProps.condition + ' in length or value');
+				if (validateMin(value, parseInt(ruleProps.conditions[0])) === false) {
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.minValidationError(value, ruleProps.conditions[0]);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
+				}
+				break;
+			case "between":
+				if (validateBetween(value, parseInt(ruleProps.conditions[0]), parseInt(ruleProps.conditions[1])) === false) {
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.betweenValidationError(value, ruleProps.conditions[0], ruleProps.conditions[1]);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 			case "defined":
 				if (validateDefined(value) === false) {
-					failing[key] = addError(failing, key, key + ' must be defined');
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.definedValidationError(value);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 			case "email":
 				if (validateEmail(value) === false) {
-					failing[key] = addError(failing, key, key + ' must be a valid email address');
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.emailValidationError(value);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 			case "has":
-				if (validateHas(value, ruleProps.condition) === false) {
-					failing[key] = addError(failing, key, key + ' must have property: ' + ruleProps.condition);
+				if (validateHas(value, ruleProps.conditions[0]) === false) {
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.hasValidationError(value, ruleProps.conditions[0]);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
+				}
+				break;
+			case "pattern":
+				if (validatePattern(value, ruleProps.conditions[0]) === false) {
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.patternValidationError(value, ruleProps.conditions[0]);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
 				}
 				break;
 		}
@@ -132,7 +291,7 @@ function assessValueAgainstRuleset(value, key, ruleset) {
 	return failing;
 }
 
-export default function(values, rules){
+export default function(values, rules, messages) {
 	if (validateObject(values) === false && validateArray(values) === false ) {
 		throw new TypeError('Value must be an object or array, with propeties to validate.');
 	}
@@ -147,7 +306,7 @@ export default function(values, rules){
 		let ruleset = rules[prop].split('.');
 		if (prop === '*') {
 			for (let key in values) {
-				var result = assessValueAgainstRuleset(values[key], key, ruleset);
+				var result = assessValueAgainstRuleset(values[key], key, ruleset, messages);
 				if (Object.keys(result).length > 0) {
 					if (typeof failing[key] !== 'undefined') {
 						for (let failure of result[key]) {
@@ -162,7 +321,7 @@ export default function(values, rules){
 			continue;
 		}
 		
-		var result = assessValueAgainstRuleset(values[prop], prop, ruleset);
+		var result = assessValueAgainstRuleset(values[prop], prop, ruleset, messages);
 		if (Object.keys(result).length > 0) {
 			if (typeof failing[prop] !== 'undefined') {
 				for (let failure of result[prop]) {

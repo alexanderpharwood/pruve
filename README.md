@@ -101,6 +101,53 @@ The value to be validated
 **errors** _{array}_  
 A list of errors for validation failures
 
+**Note:** All the anonymous validator methods will populate the errors property errors with an array of strings, whereas the passes() method (named validations) will populate the errors property with properties keyed by the validated property which failed. Here's an example:
+
+Anonymous validators:
+```
+let errors = pruve(123).string().errors
+// ['"123" is not a string']
+```
+
+Named validator:
+```
+let errors = pruve({name: 123}).passes({name: 'string'}).errors
+// { "name": ['"123" is not a string'] }
+```
+
+### Custom Error Messages
+
+Pruve supports custom error messages. They are handled like so:
+
+```
+let data = {
+	"name": "Dave",
+}
+
+let rules = {
+	"name": "string.max:255.min:2",
+}
+
+let messages = {
+	"name.string": "Name is not valid",
+	"name.max": "Name is too long",
+	"name.min": "Name is too short",
+}
+
+pruve(data).passes(rules, messages);
+``` 
+
+**Note:** If you do not provide a validation rule when defining you error messages, and give only the name of the property, that message will override all validation errors. For example:
+
+```
+let messages = {
+	"name": "Name is not valid",
+}
+```
+
+This will however only appear once in the errors array. This is a good option of you don't want to go into specifics about why the validation failed. 
+
+
 ---
 
 ### Methods

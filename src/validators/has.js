@@ -5,5 +5,5 @@ export default function(value, prop){
 		return typeof value[prop] !== 'undefined';
 	}
 	
-	throw new TypeError('Subject of method has() must be an object');
+	return false;
 }

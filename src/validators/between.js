@@ -4,21 +4,21 @@ import validateNumber from './number.js';
 import validateObject from './object.js';
 import validateString from './string.js';
 
-export default function(value, limit) {
-	if (validateInt(limit) === false) {
-		throw new TypeError('Method max() requires parameter 1 to be an integer');
+export default function(value, min, max){
+	if (validateInt(min) === false || validateInt(max) === false) {
+		throw new TypeError('Method between() requires parameter 1 and 2 to be an integer');
 	}
 	
 	if (validateNumber(value) === true) {
-		return value <= limit;
+		return value >= min && value <= max;
 	}
 
 	if (validateString(value) === true || validateArray(value) === true) {
-		return value.length <= limit;
+		return value.length >= min && value.length <= max;
 	}
 			
 	if (validateObject(value) === true) {
-		return Object.keys(value).length <= limit;
+		return Object.keys(value).length >= min && Object.keys(value).length <= max;
 	}
 	
 	return false;

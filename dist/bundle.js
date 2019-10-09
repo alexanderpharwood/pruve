@@ -155,6 +155,26 @@
     return _assertThisInitialized(self);
   }
 
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+  }
+
+  function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+      return arr2;
+    }
+  }
+
+  function _iterableToArray(iter) {
+    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  }
+
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance");
+  }
+
   function validateInt (value) {
     return Number(value) === value && value % 1 === 0;
   }
@@ -220,7 +240,7 @@
       return typeof value[prop] !== 'undefined';
     }
 
-    throw new TypeError('Subject of method has() must be an object');
+    return false;
   }
 
   function validateNull (value) {
@@ -257,15 +277,40 @@
       return expression.test(value.toLowerCase()) === true;
     }
 
-    throw new TypeError('Subject of method email() must be a string');
+    return false;
   }
 
   function validateFloat (value) {
     return Number(value) === value && value % 1 !== 0;
   }
 
+  function validateBetween (value, min, max) {
+    if (validateInt(min) === false || validateInt(max) === false) {
+      throw new TypeError('Method between() requires parameter 1 and 2 to be an integer');
+    }
+
+    if (validateNumber(value) === true) {
+      return value >= min && value <= max;
+    }
+
+    if (validateString(value) === true || validateArray(value) === true) {
+      return value.length >= min && value.length <= max;
+    }
+
+    if (validateObject(value) === true) {
+      return Object.keys(value).length >= min && Object.keys(value).length <= max;
+    }
+
+    return false;
+  }
+
   function validateDefined (value) {
     return typeof value !== 'undefined';
+  }
+
+  function validatePattern (value, pattern) {
+    var expression = new RegExp(pattern);
+    return expression.test(value) === true;
   }
 
   function validateFunction (value) {
@@ -275,6 +320,123 @@
   function validateUndefined (value) {
     return _typeof(value) === undefined;
   }
+
+  var _default =
+  /*#__PURE__*/
+  function () {
+    function _default() {
+      _classCallCheck(this, _default);
+    }
+
+    _createClass(_default, null, [{
+      key: "stringValidationError",
+      value: function stringValidationError(value) {
+        return '"' + value + '" is not a string';
+      }
+    }, {
+      key: "boolValidationError",
+      value: function boolValidationError(value) {
+        return '"' + value + '" is not a boolean';
+      }
+    }, {
+      key: "numberValidationError",
+      value: function numberValidationError(value) {
+        return '"' + value + '" is not a number';
+      }
+    }, {
+      key: "intValidationError",
+      value: function intValidationError(value) {
+        return '"' + value + '" is not an integer';
+      }
+    }, {
+      key: "floatValidationError",
+      value: function floatValidationError(value) {
+        return '"' + value + '" is not a float';
+      }
+    }, {
+      key: "arrayValidationError",
+      value: function arrayValidationError(value) {
+        return '"' + value + '" is not an array';
+      }
+    }, {
+      key: "objectValidationError",
+      value: function objectValidationError(value) {
+        return '"' + value + '" is not an object';
+      }
+    }, {
+      key: "dateValidationError",
+      value: function dateValidationError(value) {
+        return '"' + value + '" is not a date';
+      }
+    }, {
+      key: "nullValidationError",
+      value: function nullValidationError(value) {
+        return '"' + value + '" is not null';
+      }
+    }, {
+      key: "undefinedValidationError",
+      value: function undefinedValidationError(value) {
+        return '"' + value + '" is not undefined';
+      }
+    }, {
+      key: "functionValidationError",
+      value: function functionValidationError(value) {
+        return '"' + value + '" is not a function';
+      }
+    }, {
+      key: "maxValidationError",
+      value: function maxValidationError(value, max) {
+        return '"' + value + '" is greater in length or value than ' + max;
+      }
+    }, {
+      key: "minValidationError",
+      value: function minValidationError(value, min) {
+        return '"' + value + '" is less in length or value than ' + min;
+      }
+    }, {
+      key: "betweenValidationError",
+      value: function betweenValidationError(value, min, max) {
+        return 'The length or value of "' + value + '" is not between ' + min + ' and ' + max;
+      }
+    }, {
+      key: "definedValidationError",
+      value: function definedValidationError(value) {
+        return '"' + value + '" is not defined';
+      }
+    }, {
+      key: "emailValidationError",
+      value: function emailValidationError(value) {
+        return '"' + value + '" is not a valid email address';
+      }
+    }, {
+      key: "hasValidationError",
+      value: function hasValidationError(value, prop) {
+        return '"' + value + '" does not contain property "' + prop + '"';
+      }
+    }, {
+      key: "fileValidationError",
+      value: function fileValidationError(value) {
+        return '"' + value + '" is not a File';
+      }
+    }, {
+      key: "blobValidationError",
+      value: function blobValidationError(value) {
+        return '"' + value + '" is not a Blob';
+      }
+    }, {
+      key: "fileReaderValidationError",
+      value: function fileReaderValidationError(value) {
+        return '"' + value + '" is not a FileReader';
+      }
+    }, {
+      key: "patternValidationError",
+      value: function patternValidationError(value) {
+        return '"' + value + '" is not valid';
+      }
+    }]);
+
+    return _default;
+  }();
 
   var ValidationException =
   /*#__PURE__*/
@@ -297,16 +459,16 @@
 
   function getRuleProperties(rule) {
     var baseRule = rule,
-        condition = null;
+        conditions = null;
 
     if (rule.includes(':')) {
       baseRule = rule.substring(0, rule.indexOf(':'));
-      condition = rule.substring(rule.indexOf(':') + 1);
+      conditions = rule.substring(rule.indexOf(':') + 1).split(',');
     }
 
     return {
       rule: baseRule,
-      condition: condition
+      conditions: conditions
     };
   }
 
@@ -319,7 +481,26 @@
     return failing[key];
   }
 
-  function assessValueAgainstRuleset(value, key, ruleset) {
+  function messageInContext(messages, key, rule) {
+    for (var message in messages) {
+      var mesageKeySplit = message.split('.');
+      var contextMessage = mesageKeySplit.find(function (propertyRule) {
+        return propertyRule === rule;
+      });
+
+      if (typeof contextMessage !== 'undefined' && mesageKeySplit[0] === key) {
+        return messages[message];
+      }
+
+      if (mesageKeySplit.length === 1 && mesageKeySplit[0] === key) {
+        return messages[message];
+      }
+    }
+
+    return null;
+  }
+
+  function assessValueAgainstRuleset(value, key, ruleset, messages) {
     var failing = [];
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
@@ -333,112 +514,161 @@
         switch (ruleProps.rule) {
           case "string":
             if (validateString(value) === false) {
-              failing[key] = addError(failing, key, key + ' must be a string');
+              var message = messageInContext(messages, key, ruleProps.rule) || _default.stringValidationError(value);
+              failing[key] = addError(failing, key, message);
             }
 
             break;
 
           case "bool":
             if (validateBool(value) === false) {
-              failing[key] = addError(failing, key, key + ' must be a boolean');
+              var _message = messageInContext(messages, key, ruleProps.rule) || _default.booleanValidationError(value);
+
+              failing[key] = addError(failing, key, _message);
             }
 
             break;
 
           case "number":
             if (validateNumber(value) === false) {
-              failing[key] = addError(failing, key, key + ' is not a number');
+              var _message2 = messageInContext(messages, key, ruleProps.rule) || _default.numberValidationError(value);
+
+              failing[key] = addError(failing, key, _message2);
             }
 
             break;
 
           case "int":
             if (validateInt(value) === false) {
-              failing[key] = addError(failing, key, key + ' must be an integer');
+              var _message3 = messageInContext(messages, key, ruleProps.rule) || _default.intValidationError(value);
+
+              failing[key] = addError(failing, key, _message3);
             }
 
             break;
 
           case "float":
             if (validateFloat(value) === false) {
-              failing[key] = addError(failing, key, key + ' must be a float');
+              var _message4 = messageInContext(messages, key, ruleProps.rule) || _default.intValidationError(value);
+
+              failing[key] = addError(failing, key, _message4);
             }
 
             break;
 
           case "array":
             if (validateArray(value) === false) {
-              failing[key] = addError(failing, key, key + ' must be an array');
+              var _message5 = messageInContext(messages, key, ruleProps.rule) || _default.arrayValidationError(value);
+
+              failing[key] = addError(failing, key, _message5);
             }
 
             break;
 
           case "object":
             if (validateObject(value) === false) {
-              failing[key] = addError(failing, key, key + ' must be an object');
+              var _message6 = messageInContext(messages, key, ruleProps.rule) || _default.objectValidationError(value);
+
+              failing[key] = addError(failing, key, _message6);
             }
 
             break;
 
           case "date":
             if (validateDate(value) === false) {
-              failing[key] = addError(failing, key, key + ' must be a date');
+              var _message7 = messageInContext(messages, key, ruleProps.rule) || _default.dateValidationError(value);
+
+              failing[key] = addError(failing, key, _message7);
             }
 
             break;
 
           case "null":
             if (validateNull(value) === false) {
-              failing[key] = addError(failing, key, key + ' must be null');
+              var _message8 = messageInContext(messages, key, ruleProps.rule) || _default.nullValidationError(value);
+
+              failing[key] = addError(failing, key, _message8);
             }
 
             break;
 
           case "undefined":
             if (validateUndefined(value) === false) {
-              failing[key] = addError(failing, key, key + ' must be undefined');
+              var _message9 = messageInContext(messages, key, ruleProps.rule) || _default.undefinedValidationError(value);
+
+              failing[key] = addError(failing, key, _message9);
             }
 
             break;
 
           case "function":
             if (validateFunction(value) === false) {
-              failing[key] = addError(failing, key, key + ' must be a function');
+              var _message10 = messageInContext(messages, key, ruleProps.rule) || _default.functionValidationError(value);
+
+              failing[key] = addError(failing, key, _message10);
             }
 
             break;
 
           case "max":
-            if (validateMax(value, parseInt(ruleProps.condition)) === false) {
-              failing[key] = addError(failing, key, key + ' must be less than ' + ruleProps.condition + ' in length or value');
+            if (validateMax(value, parseInt(ruleProps.conditions[0])) === false) {
+              var _message11 = messageInContext(messages, key, ruleProps.rule) || _default.maxValidationError(value, ruleProps.conditions[0]);
+
+              failing[key] = addError(failing, key, _message11);
             }
 
             break;
 
           case "min":
-            if (validateMin(value, parseInt(ruleProps.condition)) === false) {
-              failing[key] = addError(failing, key, key + ' must be greater than ' + ruleProps.condition + ' in length or value');
+            if (validateMin(value, parseInt(ruleProps.conditions[0])) === false) {
+              var _message12 = messageInContext(messages, key, ruleProps.rule) || _default.minValidationError(value, ruleProps.conditions[0]);
+
+              failing[key] = addError(failing, key, _message12);
+            }
+
+            break;
+
+          case "between":
+            if (validateBetween(value, parseInt(ruleProps.conditions[0]), parseInt(ruleProps.conditions[1])) === false) {
+              var _message13 = messageInContext(messages, key, ruleProps.rule) || _default.betweenValidationError(value, ruleProps.conditions[0], ruleProps.conditions[1]);
+
+              failing[key] = addError(failing, key, _message13);
             }
 
             break;
 
           case "defined":
             if (validateDefined(value) === false) {
-              failing[key] = addError(failing, key, key + ' must be defined');
+              var _message14 = messageInContext(messages, key, ruleProps.rule) || _default.definedValidationError(value);
+
+              failing[key] = addError(failing, key, _message14);
             }
 
             break;
 
           case "email":
             if (validateEmail(value) === false) {
-              failing[key] = addError(failing, key, key + ' must be a valid email address');
+              var _message15 = messageInContext(messages, key, ruleProps.rule) || _default.emailValidationError(value);
+
+              failing[key] = addError(failing, key, _message15);
             }
 
             break;
 
           case "has":
-            if (validateHas(value, ruleProps.condition) === false) {
-              failing[key] = addError(failing, key, key + ' must have property: ' + ruleProps.condition);
+            if (validateHas(value, ruleProps.conditions[0]) === false) {
+              var _message16 = messageInContext(messages, key, ruleProps.rule) || _default.hasValidationError(value, ruleProps.conditions[0]);
+
+              failing[key] = addError(failing, key, _message16);
+            }
+
+            break;
+
+          case "pattern":
+            if (validatePattern(value, ruleProps.conditions[0]) === false) {
+              var _message17 = messageInContext(messages, key, ruleProps.rule) || _default.patternValidationError(value, ruleProps.conditions[0]);
+
+              failing[key] = addError(failing, key, _message17);
             }
 
             break;
@@ -462,7 +692,7 @@
     return failing;
   }
 
-  function validatePasses (values, rules) {
+  function validatePasses (values, rules, messages) {
     if (validateObject(values) === false && validateArray(values) === false) {
       throw new TypeError('Value must be an object or array, with propeties to validate.');
     }
@@ -478,7 +708,7 @@
 
       if (prop === '*') {
         for (var key in values) {
-          var result = assessValueAgainstRuleset(values[key], key, ruleset);
+          var result = assessValueAgainstRuleset(values[key], key, ruleset, messages);
 
           if (Object.keys(result).length > 0) {
             if (typeof failing[key] !== 'undefined') {
@@ -514,7 +744,7 @@
         continue;
       }
 
-      var result = assessValueAgainstRuleset(values[prop], prop, ruleset);
+      var result = assessValueAgainstRuleset(values[prop], prop, ruleset, messages);
 
       if (Object.keys(result).length > 0) {
         if (typeof failing[prop] !== 'undefined') {
@@ -569,37 +799,62 @@
     }
 
     _createClass(Pruve, [{
-      key: "passes",
-      value: function passes(rules) {
-        var failing = validatePasses(this.value, rules);
-
-        if (Object.keys(failing).length > 0) {
-          this.errors.push(failing);
-        }
-
-        return this;
-      }
-    }, {
-      key: "string",
-      value: function string() {
-        if (validateString(this.value) !== true) {
-          this.errors.push(this.value + ' is not a string.');
-        }
-
-        return this;
+      key: "addError",
+      value: function addError(error) {
+        this.errors.push(error);
       }
     }, {
       key: "try",
       value: function _try() {
-        if (this.errors.length > 0) {
+        if (this.errors.length > 0 || Object.keys(this.errors).length > 0) {
           throw new ValidationException(this.value, this.errors);
         }
+      }
+    }, {
+      key: "passes",
+      value: function passes(rules) {
+        var messages = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+        var failing = validatePasses(this.value, rules, messages);
+
+        if (Object.keys(failing).length > 0) {
+          for (var failure in failing) {
+            failing[failure] = _toConsumableArray(new Set(failing[failure]));
+          }
+
+          this.errors = failing;
+        }
+
+        return this;
+      }
+    }, {
+      key: "pattern",
+      value: function pattern(expression) {
+        if (validatePattern(this.value, expression) !== true) {
+          this.addError(_default.patternValidationError(this.value));
+        }
+
+        return this;
+      }
+    }, {
+      key: "is",
+      value: function is() {}
+    }, {
+      key: "in",
+      value: function _in() {}
+    }, {
+      key: "string",
+      value: function string() {
+        if (validateString(this.value) !== true) {
+          this.addError(_default.stringValidationError(this.value));
+        }
+
+        return this;
       }
     }, {
       key: "bool",
       value: function bool() {
         if (validateBool(this.value) !== true) {
-          this.errors.push(this.value + ' is not a boolean.');
+          this.addError(_default.boolValidationError(this.value));
         }
         return this;
       }
@@ -607,7 +862,7 @@
       key: "number",
       value: function number() {
         if (validateNumber(this.value) !== true) {
-          this.errors.push(this.value + ' is not a number.');
+          this.addError(_default.numberValidationError(this.value));
         }
 
         return this;
@@ -616,7 +871,7 @@
       key: "int",
       value: function int() {
         if (validateInt(this.value) !== true) {
-          this.errors.push(this.value + ' is not an integer.');
+          this.addError(_default.intValidationError(this.value));
         }
 
         return this;
@@ -625,7 +880,7 @@
       key: "float",
       value: function float() {
         if (validateFloat(this.value) !== true) {
-          this.errors.push(this.value + ' is not a float.');
+          this.addError(_default.floatValidationError(this.value));
         }
 
         return this;
@@ -634,7 +889,7 @@
       key: "array",
       value: function array() {
         if (validateArray(this.value) !== true) {
-          this.errors.push(this.value + ' is not an array.');
+          this.addError(_default.arrayValidationError(this.value));
         }
 
         return this;
@@ -643,7 +898,7 @@
       key: "object",
       value: function object() {
         if (validateObject(this.value) !== true) {
-          this.errors.push(this.value + ' is not an object.');
+          this.addError(_default.objectValidationError(this.value));
         }
 
         return this;
@@ -652,7 +907,7 @@
       key: "date",
       value: function date() {
         if (validateDate(this.value) !== true) {
-          this.errors.push(this.value + ' is not a date.');
+          this.addError(_default.dateValidationError(this.value));
         }
 
         return this;
@@ -661,7 +916,7 @@
       key: "null",
       value: function _null() {
         if (validateNull(this.value) !== true) {
-          this.errors.push(this.value + '" is not null');
+          this.addError(_default.nullValidationError(this.value));
         }
 
         return this;
@@ -670,7 +925,7 @@
       key: "undefined",
       value: function undefined$1() {
         if (validateUndefined(this.value) !== true) {
-          this.errors.push(this.value + '" is not null');
+          this.addError(_default.undefinedValidationError(this.value));
         }
 
         return this;
@@ -679,25 +934,34 @@
       key: "function",
       value: function _function() {
         if (validateFunction(this.value) !== true) {
-          this.errors.push(this.value + '" is not a function');
+          this.addError(_default.functionValidationError(this.value));
         }
 
         return this;
       }
     }, {
       key: "max",
-      value: function max(limit) {
-        if (validateMax(this.value, limit) !== true) {
-          this.errors.push(this.value + '" is greater than ' + limit + '.');
+      value: function max(_max) {
+        if (validateMax(this.value, _max) !== true) {
+          this.addError(_default.maxValidationError(this.value, _max));
         }
 
         return this;
       }
     }, {
       key: "min",
-      value: function min(minimum) {
-        if (validateMin(this.value, minimum) !== true) {
-          this.errors.push(this.value + '" is less than ' + minimum + '.');
+      value: function min(_min) {
+        if (validateMin(this.value, _min) !== true) {
+          this.addError(_default.minValidationError(this.value, _min));
+        }
+
+        return this;
+      }
+    }, {
+      key: "between",
+      value: function between(min, max) {
+        if (validateBetween(this.value, min, max) !== true) {
+          this.addError(_default.betweenValidationError(this.value, min, max));
         }
 
         return this;
@@ -706,7 +970,7 @@
       key: "defined",
       value: function defined() {
         if (validateDefined(this.value) !== true) {
-          this.errors.push(this.value + ' is not defined.');
+          this.addError(_default.definedValidationError(this.value));
         }
 
         return this;
@@ -715,7 +979,7 @@
       key: "email",
       value: function email() {
         if (validateEmail(this.value) !== true) {
-          this.errors.push(this.value + '" is not a valid email address.');
+          this.addError(_default.emailValidationError(this.value));
         }
 
         return this;
@@ -724,7 +988,7 @@
       key: "has",
       value: function has(prop) {
         if (validateHas(this.value, prop) !== true) {
-          this.errors.push(this.value + ' does not have property: ' + prop + '.');
+          this.addError(_default.hasValidationError(this.value, prop));
         }
 
         return this;
@@ -733,7 +997,7 @@
       key: "file",
       value: function file() {
         if (validateFile(this.value) !== true) {
-          this.errors.push(this.value + ' is not a File.');
+          this.addError(_default.fileValidationError(this.value));
         }
 
         return this;
@@ -742,7 +1006,7 @@
       key: "blob",
       value: function blob() {
         if (validateBlob(this.value) !== true) {
-          this.errors.push(this.value + ' is not a Blob.');
+          this.addError(_default.blobValidationError(this.value));
         }
 
         return this;
@@ -751,7 +1015,7 @@
       key: "fileReader",
       value: function fileReader() {
         if (validateFileReader(this.value) !== true) {
-          this.errors.push(this.value + ' is not a FilReader.');
+          this.addError(_default.fileReaderValidationError(this.value));
         }
 
         return this;

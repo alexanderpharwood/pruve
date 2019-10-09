@@ -6,5 +6,5 @@ export default function(value){
 		return expression.test(value.toLowerCase()) === true;
 	}
 	
-	throw new TypeError('Subject of method email() must be a string');
+	return false;
 }

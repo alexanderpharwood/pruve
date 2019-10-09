@@ -4,99 +4,6 @@ const expect = require('chai').expect;
 // var File = require('./blob-polyfill').File;
 // var FileReader = require('./blob-polyfill').FileReader;
 
-describe('pruve.passes()', function () {
-	it('should pass if all properties pass validation', function () {
-		let values = {
-			"name": "Dave Davidson",
-			"email": "dave@iamdave.com",
-			"dob": new Date('04/08/1994'),
-			"age": 36,
-			"active": true,
-			"hobbies": ['football', 'music'],
-			"car": false,
-			"pets": {
-				"dog": "barnie"
-			}
-		};
-		
-		let rules = {
-			"name": "string.max:255.min:3",
-			"email": "email.max:255",
-			"dob": "date",
-			"age": "int.min:16",
-			"active": "bool",
-			"hobbies": "array",
-			"car": "defined",
-			"pets": "has:dog"
-		};
-		
-		pruve(values).passes(rules).try();
-	});
-	it('should pass with wildcard, using an object of values, if all properties pass validation', function () {
-		let values = {
-			"name": "Dave Davidson",
-			"email": "dave@iamdave.com",
-		};
-		
-		let rules = {
-			"*": "string.max:255.min:3",
-		};
-		
-		pruve(values).passes(rules).try();
-	});
-	it('should pass with wildcard, using an array of values, if all properties pass validation', function () {
-		let values = [];
-		values["name"] = "Dave Davidson";
-		values["email"] = "dave@iamdave.com";
-		
-		let rules = {
-			"*": "string.max:255.min:3",
-		};
-		
-		pruve(values).passes(rules).try();
-	});
-	it('should structure the failures object keyed by the propery which failed and contain all its failures', function () {
-		let values = {
-			"name": null,
-			"email": "Not an email address",
-		};
-	
-		let rules = {
-			"*": 'string',
-			"name": "max:255.min:3",
-			"email": "email.max:255",
-		};
-		
-		try {
-			pruve(values).passes(rules).try()
-		} catch (exception) {
-			console.log(exception.errors)
-			expect(exception.errors[0].name).to.include(
-				'name must be a string'
-			);
-			expect(exception.errors[0].name).to.include(
-				'name must be greater than 3 in length or value'
-			);
-			expect(exception.errors[0].name).to.include(
-				'name must be less than 255 in length or value'
-			);
-		}
-	});
-	it('should throw with all relevant errors if any properties fail validation', function () {
-		let values = {
-			"name": 123,
-			"email": "Not an email address",
-		};
-		
-		let rules = {
-			"name": "string",
-			"email": "email.max:255",
-		};
-				
-		expect(function(){ pruve(values).passes(rules).try() }).to.throw(TypeError);
-	});
-});
-
 describe('pruve.string()', function () {
 	it('should pass if the value is a string', function () {
 		pruve('I am a string').string();
@@ -262,6 +169,36 @@ describe('pruve.min()', function () {
 	});
 });
 
+describe('pruve.between()', function () {
+	it('should, on a string, pass if the length is between the min and max', function () {
+		pruve('test').between(3, 10).try();
+	});
+	it('should, on a string, throw if the length is not between the min and max', function () {
+		expect(pruve('test').between(10, 20).try).to.throw(TypeError);
+	});
+
+	it('should, on a number, pass if the number is between the min and max', function () {
+		pruve(4).between(2, 5).try();
+	});
+	it('should, on a number, throw if the number is not between the min and max', function () {
+		expect(pruve(1).between(3, 4).try).to.throw(TypeError);
+	});
+
+	it('should, on an array, pass if the number of items between the min and max', function () {
+		pruve([1, 2, 3]).between(3, 4).try();
+	});
+	it('should, on an array, throw if the number of items is not between the min and max', function () {
+		expect(pruve([1, 2, 3]).between(4, 6).try).to.throw(TypeError);
+	});
+
+	it('should, on an object, pass if the number of keys is between the min and max', function () {
+		pruve({"a": 1, "b": 2}).between(1, 4).try();
+	});
+	it('should, on an object, throw if the number of keys is not between the min and max', function () {
+		expect(pruve({"a": 1, "b": 2}).between(3, 4).try).to.throw(TypeError);
+	});
+});
+
 describe('pruve.email()', function () {
 	it('should pass if the email address is valid', function () {
 		pruve('test@example.com').email().try();
@@ -290,7 +227,18 @@ describe('pruve.has()', function () {
 		expect(pruve({"foo": "bar"}).has('cat').try).to.throw(TypeError);
 	});
 	it('should throw if the value is not an object', function () {
-		expect(function(){ pruve("I am not an object").has('cat')}).to.throw(TypeError);
+		expect(pruve("I am not an object").has('cat').try).to.throw(TypeError);
+	});
+});
+
+describe('pruve.pattern()', function () {
+	it('should pass if the value matches the given pattern', function () {
+		pruve('6 I start with the number 6!').pattern('^6').try();
+	});
+	it('should throw if the value does not match the given pattern', function () {
+		expect(pruve('5').pattern('^6').errors).to.include(
+			'"5" is not valid'
+		);
 	});
 });
 
