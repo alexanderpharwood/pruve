@@ -134,14 +134,13 @@ describe('pruve.passes()', function () {
 	it('should pass with validation rules provided as an array', function () {
 		let values = {
 			"name": "Dave",
-			"email": "test@test.com",
-			"age": 43,
+			"email": "test@test.com"
 		};
 		
 		let rules = {
 			"name": ["string", "min:4"],
 			"email": ["email", "max:255", "min:5"],
-			"age": ["min:18", "max:100"],
+			"age": ["sometimes", "min:18", "max:100"],
 		};
 		
 		pruve(values).passes(rules).try();

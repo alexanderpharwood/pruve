@@ -320,6 +320,10 @@ export default function(values, rules, messages) {
 
 			continue;
 		}
+
+		if (prop in values === false && ruleset.includes('sometimes')) {
+			continue;
+		}
 		
 		var result = assessValueAgainstRuleset(values[prop], prop, ruleset, messages);
 		if (Object.keys(result).length > 0) {
