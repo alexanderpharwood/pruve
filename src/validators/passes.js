@@ -25,7 +25,12 @@ function getRuleProperties(rule) {
 		
 	if (rule.includes(':')) {
 		baseRule = rule.substring(0, rule.indexOf(':'));
-		conditions = rule.substring(rule.indexOf(':') + 1).split(',');
+		conditions = rule.substring(rule.indexOf(':') + 1);
+
+		// Only the following rules accept multiple params
+		if (baseRule === 'between') {
+			conditions = conditions.split(',');
+		}
 	}
 	
 	return {
@@ -202,9 +207,9 @@ function assessValueAgainstRuleset(value, key, ruleset, messages) {
 				}
 				break;
 			case "max":
-				if (validateMax(value, parseInt(ruleProps.conditions[0])) === false) {
+				if (validateMax(value, parseInt(ruleProps.conditions)) === false) {
 					let message = messageInContext(messages, key, ruleProps.rule)
-						|| ErrorFactory.maxValidationError(value, ruleProps.conditions[0]);
+						|| ErrorFactory.maxValidationError(value, ruleProps.conditions);
 						
 					failing[key] = addError(
 						failing,
@@ -214,9 +219,9 @@ function assessValueAgainstRuleset(value, key, ruleset, messages) {
 				}
 				break;
 			case "min":
-				if (validateMin(value, parseInt(ruleProps.conditions[0])) === false) {
+				if (validateMin(value, parseInt(ruleProps.conditions)) === false) {
 					let message = messageInContext(messages, key, ruleProps.rule)
-						|| ErrorFactory.minValidationError(value, ruleProps.conditions[0]);
+						|| ErrorFactory.minValidationError(value, ruleProps.conditions);
 						
 					failing[key] = addError(
 						failing,
@@ -262,9 +267,9 @@ function assessValueAgainstRuleset(value, key, ruleset, messages) {
 				}
 				break;
 			case "has":
-				if (validateHas(value, ruleProps.conditions[0]) === false) {
+				if (validateHas(value, ruleProps.conditions) === false) {
 					let message = messageInContext(messages, key, ruleProps.rule)
-						|| ErrorFactory.hasValidationError(value, ruleProps.conditions[0]);
+						|| ErrorFactory.hasValidationError(value, ruleProps.conditions);
 						
 					failing[key] = addError(
 						failing,
@@ -274,9 +279,9 @@ function assessValueAgainstRuleset(value, key, ruleset, messages) {
 				}
 				break;
 			case "pattern":
-				if (validatePattern(value, ruleProps.conditions[0]) === false) {
+				if (validatePattern(value, ruleProps.conditions) === false) {
 					let message = messageInContext(messages, key, ruleProps.rule)
-						|| ErrorFactory.patternValidationError(value, ruleProps.conditions[0]);
+						|| ErrorFactory.patternValidationError(value, ruleProps.conditions);
 						
 					failing[key] = addError(
 						failing,
