@@ -309,7 +309,23 @@
   }
 
   function validatePattern (value, pattern) {
-    var expression = new RegExp(pattern);
+    //Remove the preceeding slash
+    pattern = pattern.substring(1); // if there is a slahs at the end (no flags specified, remove it)
+    // if (pattern.endsWith('/')) {
+    // 	pattern = pattern.substring(0, pattern.length - 1);
+    // }
+    // 
+
+    var source = pattern;
+    var flags = ''; // If there are flags at the end, extract them, and remove from the pattern.
+
+    if (/\/[gimsuy]+$/.test(pattern)) {
+      source = pattern.substring(0, pattern.lastIndexOf('/'));
+      flags = pattern.substring(pattern.lastIndexOf('/') + 1);
+    } // Ressemble the into a proper RexExp object with appropriate flags.
+
+
+    var expression = new RegExp(source, flags);
     return expression.test(value) === true;
   }
 
@@ -463,7 +479,11 @@
 
     if (rule.includes(':')) {
       baseRule = rule.substring(0, rule.indexOf(':'));
-      conditions = rule.substring(rule.indexOf(':') + 1).split(',');
+      conditions = rule.substring(rule.indexOf(':') + 1); // Only the following rules accept multiple params
+
+      if (baseRule === 'between') {
+        conditions = conditions.split(',');
+      }
     }
 
     return {
@@ -611,8 +631,8 @@
             break;
 
           case "max":
-            if (validateMax(value, parseInt(ruleProps.conditions[0])) === false) {
-              var _message11 = messageInContext(messages, key, ruleProps.rule) || _default.maxValidationError(value, ruleProps.conditions[0]);
+            if (validateMax(value, parseInt(ruleProps.conditions)) === false) {
+              var _message11 = messageInContext(messages, key, ruleProps.rule) || _default.maxValidationError(value, ruleProps.conditions);
 
               failing[key] = addError(failing, key, _message11);
             }
@@ -620,8 +640,8 @@
             break;
 
           case "min":
-            if (validateMin(value, parseInt(ruleProps.conditions[0])) === false) {
-              var _message12 = messageInContext(messages, key, ruleProps.rule) || _default.minValidationError(value, ruleProps.conditions[0]);
+            if (validateMin(value, parseInt(ruleProps.conditions)) === false) {
+              var _message12 = messageInContext(messages, key, ruleProps.rule) || _default.minValidationError(value, ruleProps.conditions);
 
               failing[key] = addError(failing, key, _message12);
             }
@@ -656,8 +676,8 @@
             break;
 
           case "has":
-            if (validateHas(value, ruleProps.conditions[0]) === false) {
-              var _message16 = messageInContext(messages, key, ruleProps.rule) || _default.hasValidationError(value, ruleProps.conditions[0]);
+            if (validateHas(value, ruleProps.conditions) === false) {
+              var _message16 = messageInContext(messages, key, ruleProps.rule) || _default.hasValidationError(value, ruleProps.conditions);
 
               failing[key] = addError(failing, key, _message16);
             }
@@ -665,8 +685,8 @@
             break;
 
           case "pattern":
-            if (validatePattern(value, ruleProps.conditions[0]) === false) {
-              var _message17 = messageInContext(messages, key, ruleProps.rule) || _default.patternValidationError(value, ruleProps.conditions[0]);
+            if (validatePattern(value, ruleProps.conditions) === false) {
+              var _message17 = messageInContext(messages, key, ruleProps.rule) || _default.patternValidationError(value, ruleProps.conditions);
 
               failing[key] = addError(failing, key, _message17);
             }
