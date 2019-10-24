@@ -233,10 +233,10 @@ describe('pruve.has()', function () {
 
 describe('pruve.pattern()', function () {
 	it('should pass if the value matches the given pattern', function () {
-		pruve('6 I start with the number 6!').pattern('^6').try();
+		pruve('6 I start with the number 6!').pattern('/^6/').try();
 	});
 	it('should throw if the value does not match the given pattern', function () {
-		expect(pruve('5').pattern('^6').errors).to.include(
+		expect(pruve('5').pattern('/^6/').errors).to.include(
 			'"5" is not valid'
 		);
 	});

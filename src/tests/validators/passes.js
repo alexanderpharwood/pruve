@@ -14,7 +14,7 @@ describe('pruve.passes()', function () {
 			"pets": {
 				"dog": "barnie"
 			},
-			"random": "6"
+			"random": "123,456,789"
 		};
 		
 		let rules = {
@@ -26,9 +26,8 @@ describe('pruve.passes()', function () {
 			"hobbies": "array",
 			"car": "defined",
 			"pets": "has:dog",
-			"random": ["pattern:^6"]
+			"random": ["pattern:/^[A-Za-z0-9,-]+$/g"]
 		};
-		
 		pruve(values).passes(rules).try();
 	});
 	it('should pass with wildcard, using an object of values, if all properties pass validation', function () {
