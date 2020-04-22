@@ -73,7 +73,7 @@ ValidationException {
 	message: 'Validation failed',
 	errors: {
 			name: [
-				'null is not a string'	
+				'null is not a string'
 			]
 		}
 }
@@ -133,7 +133,7 @@ let messages = {
 }
 
 pruve(data).passes(rules, messages);
-``` 
+```
 
 **Note:** If you do not provide a validation rule when defining you error messages, and give only the name of the property, that message will override all validation errors. For example:
 
@@ -143,7 +143,7 @@ let messages = {
 }
 ```
 
-This will however only appear once in the errors array. This is a good option of you don't want to go into specifics about why the validation failed. 
+This will however only appear once in the errors array. This is a good option of you don't want to go into specifics about why the validation failed.
 
 
 ---
@@ -326,6 +326,11 @@ Validate that the value is a valid email address.
 ```
 let email = 'test@test.com'
 pruve(email).defined()
+
+**has( _{string}_ )**  
+Validate that the object has the given key. Only applicable to objects.  
+**Param** _{string}_  key  
+**Returns** Pruve
 ```
 **has( _{string}_ )**  
 Validate that the object has the given key. Only applicable to objects.  
@@ -333,8 +338,21 @@ Validate that the object has the given key. Only applicable to objects.
 **Returns** Pruve
 
 ```
-let obj = {foo: 'bar'}
+let obj = {foo: "bar"};
 pruve(obj).has('foo')
+```
+
+**eachHas( _{string}_ )**  
+Validate that all objects in the array have the given key. Only applicable to arrays of objects.  
+**Param** _{string}_  key  
+**Returns** Pruve
+
+```
+let arr = [
+	{foo: "bar"}
+	{foo: "baz"}
+]
+pruve(arr).has('foo')
 ```
 
 **pattern( _{string}_ )**  
