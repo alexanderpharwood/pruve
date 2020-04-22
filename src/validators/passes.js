@@ -14,6 +14,7 @@ import validateObject from './object.js';
 import validateBetween from './between.js';
 import validateDefined from './defined.js';
 import validatePattern from './pattern.js';
+import validateEachHas from './eachHas.js';
 import validateFunction from './function.js';
 import validateUndefined from './undefined.js';
 import ErrorFactory from '../factories/ErrorFactory.js';
@@ -270,6 +271,18 @@ function assessValueAgainstRuleset(value, key, ruleset, messages) {
 				if (validateHas(value, ruleProps.conditions) === false) {
 					let message = messageInContext(messages, key, ruleProps.rule)
 						|| ErrorFactory.hasValidationError(value, ruleProps.conditions);
+						
+					failing[key] = addError(
+						failing,
+						key,
+						message
+					);
+				}
+				break;
+			case "eachHas":
+				if (validateEachHas(value, ruleProps.conditions) === false) {
+					let message = messageInContext(messages, key, ruleProps.rule)
+						|| ErrorFactory.eachHasValidationError(value, ruleProps.conditions);
 						
 					failing[key] = addError(
 						failing,

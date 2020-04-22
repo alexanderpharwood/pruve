@@ -67,6 +67,10 @@ export default class {
 		return '"' + value + '" does not contain property "' + prop + '"';
 	}
 	
+	static eachHasValidationError(value, prop) {
+		return 'All children must contain property "' + prop + '"';
+	}
+	
 	static fileValidationError(value) {
 		return '"' + value + '" is not a File';
 	}

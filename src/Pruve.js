@@ -17,6 +17,7 @@ import validateObject from './validators/object.js';
 import validateDefined from './validators/defined.js';
 import validatePattern from './validators/pattern.js';
 import validateBetween from './validators/between.js';
+import validateEachHas from './validators/eachHas.js';
 import ErrorFactory from './factories/ErrorFactory.js';
 import validateFunction from './validators/function.js';
 import validateUndefined from './validators/undefined.js';
@@ -200,6 +201,14 @@ class Pruve {
 			this.addError(ErrorFactory.hasValidationError(this.value, prop));
 		}
 		
+		return this;
+	}
+	
+	eachHas(prop) {
+		if (validateEachHas(this.value, prop) !== true) {
+			this.addError(ErrorFactory.eachHasValidationError(this.value, prop));
+		}
+	
 		return this;
 	}
 	

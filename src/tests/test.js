@@ -231,6 +231,31 @@ describe('pruve.has()', function () {
 	});
 });
 
+describe('pruve.eachHas()', function () {
+	it('should pass if all the children of the value have the given property', function () {
+		const values = [
+				{
+					test: true
+				},
+				{
+					test: false
+				},
+			];
+		pruve(values).eachHas('test').try();
+	});
+	it('should throw if not all the children have the given property', function () {
+		const values = [
+				{
+					test: true
+				},
+				{
+					blah: false
+				},
+			];
+		expect(pruve(values).eachHas('test').try).to.throw(TypeError);
+	});
+});
+
 describe('pruve.pattern()', function () {
 	it('should pass if the value matches the given pattern', function () {
 		pruve('6 I start with the number 6!').pattern('/^6/').try();

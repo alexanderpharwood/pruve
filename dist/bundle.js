@@ -310,23 +310,62 @@
 
   function validatePattern (value, pattern) {
     //Remove the preceeding slash
-    pattern = pattern.substring(1); // if there is a slahs at the end (no flags specified, remove it)
-    // if (pattern.endsWith('/')) {
-    // 	pattern = pattern.substring(0, pattern.length - 1);
-    // }
-    // 
+    pattern = pattern.substring(1); // If there is a slash at the end (no flags specified) remove it
+
+    if (pattern.endsWith('/')) {
+      pattern = pattern.substring(0, pattern.length - 1);
+    }
 
     var source = pattern;
-    var flags = ''; // If there are flags at the end, extract them, and remove from the pattern.
+    var flags = ''; // If there are flags at the end, extract them, and remove from the pattern
 
     if (/\/[gimsuy]+$/.test(pattern)) {
       source = pattern.substring(0, pattern.lastIndexOf('/'));
       flags = pattern.substring(pattern.lastIndexOf('/') + 1);
-    } // Ressemble the into a proper RexExp object with appropriate flags.
+    } // Ressemble the into a proper RexExp object with appropriate flags
 
 
     var expression = new RegExp(source, flags);
     return expression.test(value) === true;
+  }
+
+  function validateEachHas (value, prop) {
+    var passing = true;
+
+    if (validateObject(value) === false) {
+      return false;
+    }
+
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = value[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var check = _step.value;
+
+        if (validateObject(check) === false) {
+          return false;
+        }
+
+        passing = typeof check[prop] !== 'undefined';
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+          _iterator["return"]();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+
+    return passing;
   }
 
   function validateFunction (value) {
@@ -428,6 +467,11 @@
       key: "hasValidationError",
       value: function hasValidationError(value, prop) {
         return '"' + value + '" does not contain property "' + prop + '"';
+      }
+    }, {
+      key: "eachHasValidationError",
+      value: function eachHasValidationError(value, prop) {
+        return 'All children must contain property "' + prop + '"';
       }
     }, {
       key: "fileValidationError",
@@ -684,11 +728,20 @@
 
             break;
 
-          case "pattern":
-            if (validatePattern(value, ruleProps.conditions) === false) {
-              var _message17 = messageInContext(messages, key, ruleProps.rule) || _default.patternValidationError(value, ruleProps.conditions);
+          case "eachHas":
+            if (validateEachHas(value, ruleProps.conditions) === false) {
+              var _message17 = messageInContext(messages, key, ruleProps.rule) || _default.eachHasValidationError(value, ruleProps.conditions);
 
               failing[key] = addError(failing, key, _message17);
+            }
+
+            break;
+
+          case "pattern":
+            if (validatePattern(value, ruleProps.conditions) === false) {
+              var _message18 = messageInContext(messages, key, ruleProps.rule) || _default.patternValidationError(value, ruleProps.conditions);
+
+              failing[key] = addError(failing, key, _message18);
             }
 
             break;
@@ -1013,6 +1066,15 @@
       value: function has(prop) {
         if (validateHas(this.value, prop) !== true) {
           this.addError(_default.hasValidationError(this.value, prop));
+        }
+
+        return this;
+      }
+    }, {
+      key: "eachHas",
+      value: function eachHas(prop) {
+        if (validateEachHas(this.value, prop) !== true) {
+          this.addError(_default.eachHasValidationError(this.value, prop));
         }
 
         return this;

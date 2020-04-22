@@ -14,6 +14,10 @@ describe('pruve.passes()', function () {
 			"pets": {
 				"dog": "barnie"
 			},
+			"houses": [
+				{"number": 67},
+				{"number": 56},
+			],
 			"random": "123,456,789"
 		};
 		
@@ -26,6 +30,7 @@ describe('pruve.passes()', function () {
 			"hobbies": "array",
 			"car": "defined",
 			"pets": "has:dog",
+			"houses": "eachHas:number",
 			"random": ["pattern:/^[A-Za-z0-9,-]+$/g"]
 		};
 		pruve(values).passes(rules).try();
