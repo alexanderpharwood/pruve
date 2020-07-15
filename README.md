@@ -51,9 +51,22 @@ app.post('/users', (req, res) => {
 })
 ```
 
+Alternatively, you can use a promise-based approach. The Pruve object is "thenable"; it contains a `then` function which checks for validation errors and throw if it finds any, much like the `try` method. Because the `then` function is async, it will automatically return a promise for you to catch:
+
+ ```
+pruve('Example string!').string()
+	.then(pruve => {
+	 	// the pruve object
+	}).catch(exception => {
+		// ValidationException
+	})
+ ```
+
+ This approach is particularly useful when you are using custom validation functions, which can now return promises, and therefore be asynchronous. Checking the database for a unique email address on registration is a good real-world example.
+
 ## ValidationException
 
-If the try() method is called on a Pruve instacne which contains errors, a ValidationException will be thrown. Here are two examples of how this exception might look:
+If the `try` or `then` methods are called on a Pruve instance which contains errors, a ValidationException will be thrown. Here are two examples of how this exception might look:
 
 ```
 pruve(null).string().try()
@@ -96,18 +109,24 @@ pruve('I am a string!').string()
 **value** _{mixed}_  
 The value to be validated  
 
-**errors** _{array|object}_  
-A list of errors for validation failures
+**errors** [public getter] _{array|object}_  
+A list of errors for validation failures from either namedErrors or anonymousErrors
 
-**Note:** All the anonymous validator methods will populate the errors property  with an array of strings, whereas the passes() method (named validation) will populate the errors property with properties keyed by the validated property which failed. Here's an example:
+**_namedErrors** [private] _{object}_  
+A list of errors of named validation failures.
 
-Anonymous validators:
+**_anonymousErrors** [private] _{array}_  
+A list of errors for anonymous validation failures.
+
+**Note:** In almost all scenarios, it is far more reasonable to access errors through the errors getter, rather than through the `_namedErrors` and `_anonymousErrors` properties. It is also important to note that `_namedErrors` is an object whereas `_anonymousErrors` is an array:
+
+Anonymous errors:
 ```
 let errors = pruve(123).string().errors
 // ['"123" is not a string']
 ```
 
-Named validator:
+Named errors:
 ```
 let errors = pruve({name: 123}).passes({name: 'string'}).errors
 // { "name": ['"123" is not a string'] }
@@ -145,15 +164,63 @@ let messages = {
 
 This will however only appear once in the errors array. This is a good option of you don't want to go into specifics about why the validation failed.
 
+## Promises & custom validation functions
+
+Pruve also supports custom validation functions. These can be regular functions, which return `false` on fail, functions which return promises, or direct promise objects. As rules, they must be provided within an object. The key can be anything, but should match any custom errors you wish you use for your custom validation functions. See below for usage.
+
+#### Functions
+To trigger a validation failure regular functions must return false.
+
+#### Promises
+Promises are handled differently to regular functions. If a function returns a promise, or a promise is passed in directly, there are a few ways to trigger a validation failure. The promise can either resolve to false, reject, or throw. The contents of the rejection or thrown error is irrelevant as it will not be used for any validation error message. Promises must always resolve, be it successfully or otherwise. Unresolved promises will cause the validation process to hang.
+
+
+Here is an example using a custom validation function and a promise. Notice how `customFunction` and `customPromise` are passed into rules as properties of an object:
+
+```
+
+const customFunction = value => value < 40;
+const customPromise = axios.get('www.example.com/verify-age')
+	.then(response => response.data === true);
+
+let values = {
+	"age": 50
+};
+
+let rules = {
+	"age": ["number", {customFunction, customPromise}]
+};
+
+let messages = {
+	"age.number": "Age must be a number"
+	"age.customAge": "Age is invalid",
+	"age.customPromise": "Age is invalid",
+};
+
+return pruve(values).passes(rules, messages).then(result => {
+	// All good!
+}).catch(exception => {
+	//exception.errors
+})
+
+```
+
+The custom function alone is not asynchronous, and therefore `then` is only required because of the promise. If a custom validator is a promise or returns a promuse, you must call `then` to ensure all validations are executed before accessing any errors.
 
 ---
 
-## Methods
+## Pruve Methods
 
 **try()**  
 Assess errors and throw a ValidationException if any are present.  
 **Throws** ValidationException  
+**Returns** Pruve
+
+**then()**  
+Resolve any pending promises and assess errors. Throw a ValidationException if errors are present or any promises resolve false, reject, or throw. This method should always be followed by a .catch()  
+**async**  
 **Returns** Pruve  
+**Throws** ValidationException
 
 ### Named Validation
 To perform named validation you must use the passes() method, and provide an object with named properties to validate, along with a ruleset. Named validation means the errors property on the Pruve object and ValidationException will be a keyed object rather than an array. Named validation required more code but provides more verbose errors. It also allows for custom error messages.
@@ -364,7 +431,7 @@ Validate that the matches the given pattern.
 pruve('6 is my age').pattern('^6')
 ```
 
-**Note:** when using named validation, pettern does not support period-separated strings. Rules must be provided as an array:
+**Note:** when using named validation, pattern does not support period-separated strings. Rules must be provided as an array:
 
 ```
 let values = {
