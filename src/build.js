@@ -12,7 +12,9 @@ const inputOptions = {
 	input: './src/index.js',
 	plugins: [
       babel({
-        exclude: 'node_modules/**'
+        exclude: 'node_modules/**',
+		runtimeHelpers: true,
+		
       })
     ]
 };
@@ -21,7 +23,8 @@ const inputOptionsMin = {
 	input: './src/index.js',
 	plugins: [
       babel({
-        exclude: 'node_modules/**'
+        exclude: 'node_modules/**',
+		runtimeHelpers: true,
       }),
       uglify()
     ]
