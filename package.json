@@ -1,6 +1,6 @@
 {
 		"name": "pruve",
-		"version": "1.0.12",
+		"version": "1.0.13",
 		"description": "Declarative JavaScript data validation",
 		"repository": "https://github.com/alexanderpharwood/pruve.git",
 		"main": "./dist/bundle.js",
@@ -13,12 +13,13 @@
 		},
 		"author": "Alexander P. Harwood <alex.harwood@live.co.uk>",
 		"license": "ISC",
-		"dependencies": {},
+		"dependencies": {
+				"@babel/runtime": "^7.10.5"
+		},
 		"devDependencies": {
 				"@babel/core": "^7.4.5",
 				"@babel/plugin-transform-runtime": "^7.10.5",
 				"@babel/preset-env": "^7.10.4",
-				"@babel/runtime": "^7.10.5",
 				"chai": "^4.2.0",
 				"eslint": "^6.0.1",
 				"mocha": "^6.1.4",
