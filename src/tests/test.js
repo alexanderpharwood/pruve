@@ -1,4 +1,4 @@
-const pruve = require('../../dist/bundle.js');
+const pruve = require('../../dist/bundle.min.js');
 const expect = require('chai').expect;
 // var Blob = require('./blob-polyfill').Blob;
 // var File = require('./blob-polyfill').File;
@@ -98,7 +98,7 @@ describe('pruve.date()', function () {
 // 		expect(pruve('Not a file').file).to.throw(TypeError);
 // 	});
 // });
-// 
+//
 // describe('pruve.blob()', function () {
 // 	it('should pass if the value is a Blob', function () {
 // 		let blob = new Blob([1,2,3]);
@@ -116,21 +116,21 @@ describe('pruve.max()', function () {
 	it('should, on a string, throw if the length is greater than, or equal to, the given limit', function () {
 		expect( pruve('test').max(2).try ).to.throw(TypeError);
 	});
-	
+
 	it('should, on a number, pass if the number is smaller than, or equal to, the given limit', function () {
 		pruve(1).max(2).try();
 	});
 	it('should, on a number, throw if the number is greater than, or equal to, the given limit', function () {
 		expect(pruve(3).max(2).try).to.throw(TypeError);
 	});
-		
+
 	it('should, on an array, pass if the number of items is smaller than, or equal to, the given limit', function () {
 		pruve([1, 2, 3]).max(3).try();
 	});
 	it('should, on an array, throw if the number of items is greater than, or equal to, the given limit', function () {
 		expect(pruve([1, 2, 3]).max(2).try).to.throw(TypeError);
 	});
-	
+
 	it('should, on an object, pass if the number of keys is smaller than, or equal to, the given limit', function () {
 		pruve({"a": 1, "b": 2}).max(2).try();
 	});
@@ -146,21 +146,21 @@ describe('pruve.min()', function () {
 	it('should, on a string, throw if the length is greater than, or equal to, the given minimum', function () {
 		expect(pruve('test').min(10).try).to.throw(TypeError);
 	});
-	
+
 	it('should, on a number, pass if the number is greater than, or equal to, the given minimum', function () {
 		pruve(4).min(2);
 	});
 	it('should, on a number, throw if the number is smaller than, or equal to, the given minimum', function () {
 		expect(pruve(3).min(4).try).to.throw(TypeError);
 	});
-		
+
 	it('should, on an array, pass if the number of items is greater than, or equal to, the given minimum', function () {
 		pruve([1, 2, 3]).min(3).try();
 	});
 	it('should, on an array, throw if the number of items is smaller than, or equal to, the given minimum', function () {
 		expect(pruve([1, 2, 3]).min(4).try).to.throw(TypeError);
 	});
-	
+
 	it('should, on an object, pass if the number of keys is greater than, or equal to, the given minimum', function () {
 		pruve({"a": 1, "b": 2}).min(2).try();
 	});
@@ -203,7 +203,7 @@ describe('pruve.email()', function () {
 	it('should pass if the email address is valid', function () {
 		pruve('test@example.com').email().try();
 	});
-	
+
 	it('should throw if the email address is invalid', function () {
 		expect(pruve('Not a valid email address').email().try).to.throw(TypeError);
 	});
@@ -213,7 +213,7 @@ describe('pruve.defined()', function () {
 	it('should pass if the value is defined', function () {
 		pruve('I am defined').defined().try();
 	});
-	
+
 	it('should throw if the value is not defined', function () {
 		expect(pruve().defined().try).to.throw(TypeError);
 	});

@@ -40,6 +40,10 @@ class Pruve {
 		return this._anonymousErrors;
 	}
 
+	get values() {
+		return this.value;
+	}
+
 	addNamedError(key, error) {
 		if (typeof this._namedErrors[key] === 'undefined') {
 			this._namedErrors[key] = [];

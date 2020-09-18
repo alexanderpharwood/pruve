@@ -1,4 +1,4 @@
-const pruve = require('../../../dist/bundle.js');
+const pruve = require('../../../dist/bundle.min.js');
 const expect = require('chai').expect;
 
 describe('pruve.passes()', function () {

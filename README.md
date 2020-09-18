@@ -51,14 +51,16 @@ app.post('/users', (req, res) => {
 })
 ```
 
-Alternatively, you can use a promise-based approach. The Pruve object is "thenable"; it contains a `then` function which checks for validation errors and throw if it finds any, much like the `try` method. Because the `then` function is async, it will automatically return a promise for you to catch:
+Alternatively, you can use a promise-based approach. The Pruve object is "thenable"; it contains a `then` function which checks for validation errors and throws if it finds any, much like the `try` method. Because the `then` function is async, it will automatically return a promise for you to catch:
 
  ```
 pruve('Example string!').string()
-	.then(pruve => {
-	 	// the pruve object
+	.then(validated => {
+	 	// the validated Pruve object
+		// validated.values contains the values which have passed validation
 	}).catch(exception => {
 		// ValidationException
+		// exception.errors contains all the validation errors
 	})
  ```
 
@@ -169,19 +171,25 @@ This will however only appear once in the errors array. This is a good option of
 Pruve also supports custom validation functions. These can be regular functions, which return `false` on fail, functions which return promises, or direct promise objects. As rules, they must be provided within an object. The key can be anything, but should match any custom errors you wish you use for your custom validation functions. See below for usage.
 
 #### Functions
-To trigger a validation failure regular functions must return false.
+To trigger a validation failure regular functions must return false. Functions can accept one parameter: the value being validated. Again, see below for usage.
 
 #### Promises
 Promises are handled differently to regular functions. If a function returns a promise, or a promise is passed in directly, there are a few ways to trigger a validation failure. The promise can either resolve to false, reject, or throw. The contents of the rejection or thrown error is irrelevant as it will not be used for any validation error message. Promises must always resolve, be it successfully or otherwise. Unresolved promises will cause the validation process to hang.
 
 
-Here is an example using a custom validation function and a promise. Notice how `customFunction` and `customPromise` are passed into rules as properties of an object:
+Here is an example using a custom validation function and a promise. Notice how our functions are properties of the rules object, the keys of which map to the keys in the messages object:
 
 ```
 
-const customFunction = value => value < 40;
-const customPromise = axios.get('www.example.com/verify-age')
+const customFunction = value => value > 21;
+
+const customPromise = axios.get('www.example.com/verify-age?age=50')
 	.then(response => response.data === true);
+
+const customFunctionReturningPromise = value => {
+	axios.get('www.example.com/verify-age?age=' + value)
+	.then(response => response.data === true);
+}
 
 let values = {
 	"age": 50
@@ -193,11 +201,11 @@ let rules = {
 
 let messages = {
 	"age.number": "Age must be a number"
-	"age.customAge": "Age is invalid",
+	"age.customFunction": "Age is invalid",
 	"age.customPromise": "Age is invalid",
 };
 
-return pruve(values).passes(rules, messages).then(result => {
+return pruve(values).passes(rules, messages).then(validated => {
 	// All good!
 }).catch(exception => {
 	//exception.errors
@@ -205,7 +213,7 @@ return pruve(values).passes(rules, messages).then(result => {
 
 ```
 
-The custom function alone is not asynchronous, and therefore `then` is only required because of the promise. If a custom validator is a promise or returns a promuse, you must call `then` to ensure all validations are executed before accessing any errors.
+The custom function alone is not asynchronous, and therefore `then` is only required because of the promise. If a custom validator is a promise or returns a promise, you must call `then` to ensure all validations are executed before accessing any errors.
 
 ---
 
@@ -424,6 +432,7 @@ pruve(arr).has('foo')
 
 **pattern( _{string}_ )**  
 Validate that the matches the given pattern.  
+Note
 **Param** _{string}_  pattern  
 **Returns** Pruve
 
@@ -442,5 +451,16 @@ let rules = {
 	"name": ["string", "max:255", "pattern:[a-zA-Z]"]
 }
 ```
+
+**Note 2:** JavaScript uses backslashes ("\\") to escape characters in strings. If your regular expression contains backslashes, you must doube escape them:
+
+```
+let rules = {
+	"name": ["pattern:^[A-Za-z\\d-]+$"]
+}
+```
+
+The alternative is to use a customer function for more complex regular expression tests, as documented above, rather then the pattern helper.
+
 
 More documentation coming soon...

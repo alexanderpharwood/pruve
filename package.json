@@ -1,15 +1,15 @@
 {
 		"name": "pruve",
-		"version": "1.0.13",
+		"version": "1.0.14",
 		"description": "Declarative JavaScript data validation",
 		"repository": "https://github.com/alexanderpharwood/pruve.git",
-		"main": "./dist/bundle.js",
+		"main": "./dist/bundle.min.js",
 		"module": "./src/index.js",
 		"browser": "./dist/bundle.min.js",
 		"unpkg": "./dist/bundle.min.js",
 		"scripts": {
 				"test": "npm run build && mocha src/tests src/tests/validators",
-				"build": "node src/build.js"
+				"build": "webpack"
 		},
 		"author": "Alexander P. Harwood <alex.harwood@live.co.uk>",
 		"license": "ISC",
@@ -20,11 +20,13 @@
 				"@babel/core": "^7.4.5",
 				"@babel/plugin-transform-runtime": "^7.10.5",
 				"@babel/preset-env": "^7.10.4",
+				"@rollup/plugin-babel": "^5.1.0",
+				"@rollup/plugin-node-resolve": "^8.4.0",
+				"babel-loader": "^8.1.0",
 				"chai": "^4.2.0",
 				"eslint": "^6.0.1",
 				"mocha": "^6.1.4",
-				"rollup": "^1.16.2",
-				"rollup-plugin-babel": "^4.3.3",
-				"rollup-plugin-uglify": "^6.0.4"
+				"webpack": "^4.44.1",
+				"webpack-cli": "^3.3.12"
 		}
 }
