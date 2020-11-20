@@ -5,10 +5,10 @@ import validateObject from './object.js';
 import validateString from './string.js';
 
 export default function(value, min, max){
-	if (validateInt(min) === false || validateInt(max) === false) {
-		throw new TypeError('Method between() requires parameter 1 and 2 to be an integer');
+	if (validateNumber(min) === false || validateNumber(max) === false) {
+		throw new TypeError('Method between() requires parameter 1 and 2 to be numbers');
 	}
-	
+
 	if (validateNumber(value) === true) {
 		return value >= min && value <= max;
 	}
@@ -16,10 +16,10 @@ export default function(value, min, max){
 	if (validateString(value) === true || validateArray(value) === true) {
 		return value.length >= min && value.length <= max;
 	}
-			
+
 	if (validateObject(value) === true) {
 		return Object.keys(value).length >= min && Object.keys(value).length <= max;
 	}
-	
+
 	return false;
 }

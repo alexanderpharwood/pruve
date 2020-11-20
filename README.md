@@ -11,15 +11,9 @@ Declarative JavaScript data validation
 ![GitHub last commit](https://img.shields.io/github/last-commit/alexanderpharwood/pruve.svg)
 ![GitHub issues](https://img.shields.io/github/issues/alexanderpharwood/pruve.svg)  
 
-Pruve is a declarative data validator which allows for validation of individual variables or objects containing data for validation, as you would find with request objects.
-
+Pruve is a declarative data validator that comes with modular validation methods, as well methods for validating large objects with custom rules and error messages.
 
 ## Usage
-
-#### Unpkg
-```
-<script src="https://unpkg.com/pruve/dist/bundle.min.js"></script>
-```
 
 #### Npm
 ```
@@ -30,58 +24,119 @@ npm install pruve
 ```
 yarn add pruve
 ```
-You can require the pruve validation method like so:
+#### Browser (Unpkg)
 ```
+<script src="https://unpkg.com/pruve/dist/browser"></script>
+```
+Import the validation constructor:
+```
+// ESM
+import pruve from 'pruve';
+
+// CommonJs
 const pruve = require('pruve');
 ```
-Alternatively, you can import the module directly if you are using an ES6-aware build tool like Webpack or Rollup, which makes use of the 'module' field in package.json.
+
+Individual validation methods are also available:
+
 ```
-import pruve from 'pruve';
+// ESM
+import { validateString } from 'pruve';
+
+// CommonJs
+const validateString = require('pruve/validators/string');
 ```
 
-## Trying and catching
-Pruve does not return boolean values telling you whether or not validation has been successful. Each validator method which fails will add an error to the Pruve object it returns. The try method -- of which more below -- throws a ValidationException error which should be caught. Here is a very crude example using Express:
+## Performing validation
+The individual validation methods simply return true or false to indicate a pass or a fail. For example:
+
 ```
-app.post('/users', (req, res) => {
-	try {
-  	  pruve(req.body.name).string().max(255).try();
-    } catch (exception) {
-  	  res.render(422);
-    }
+validateString('I am a string!') // true
+validateString(3.14) // false
+```
+The pruve constructor, however, is much more powerful. It accepts an object containing the data to be validated. The `passes` method is then called, which accepts an object of rules and then performs the validation. It either throws, or returns the validated data. For example:
+
+```
+const data = {name: "Dave"};
+const rules = {name: 'string.max:255.min:2'}
+
+const validated = pruve(data).passes(rules);
+// {name: "Dave"}
+
+```
+
+As mentioned above, the `passes` methd will throw a `ValidationException` -- of which more below -- if validation fails. This must be caught:
+
+```
+const data = {name: 3.14};
+const rules = {name: 'string'}
+
+try {
+	const validated = pruve(data).passes(rules);
+} catch (exception) {
+	exception.errors // {name: ["Value must be a string"]}
+}
+
+```
+
+## Custom functions, promises, and asynchronous validation
+
+Pruve also supports custom validation functions. These can be regular functions, which return `false` on fail, functions which return promises, or direct promise objects. As rules, they must be provided within an object. The key can be anything, but should match any custom errors you wish you use for your custom validation functions. See below for usage.
+
+#### Functions
+To trigger a validation failure regular functions can either return false or throw. Functions can accept one parameter: the value being validated. Again, see below for usage.
+
+#### Promises
+Promises are handled differently to regular functions. If a function returns a promise, or a promise is passed in directly, there are a few ways to trigger a validation failure. The promise can either resolve to false, reject, or throw. The contents of the rejection or thrown error is irrelevant as it will not be used for any validation error message. Promises must always resolve, be it successfully or otherwise. Unresolved promises will cause the validation process to hang.
+
+
+Here is an example using a custom validation function and a promise. Notice how our functions are properties of the rules object, the keys of which map to the keys in the messages object:
+
+```
+
+const customFunction = value => value > 21;
+
+const customPromise = axios.get('www.example.com/verify-age?age=50')
+	.then(response => response.data === true);
+
+const customFunctionReturningPromise = value => {
+	axios.get('www.example.com/verify-age?age=' + value)
+	.then(response => response.data === true);
+}
+
+let values = {
+	"age": 50
+};
+
+let rules = {
+	"age": ["number", {customFunction, customPromise, customFunctionReturningPromise}]
+};
+
+let messages = {
+	"age.number": "Age must be a number"
+	"age.customFunction": "Age is invalid",
+	"age.customPromise": "Age is invalid",
+	"age.customFunctionReturningPromise": "Age is invalid",
+};
+
+return pruve(values).passes(rules, messages).then(validated => {
+	// All good!
+}).catch(exception => {
+	//exception.errors
 })
+
 ```
 
-Alternatively, you can use a promise-based approach. The Pruve object is "thenable"; it contains a `then` function which checks for validation errors and throws if it finds any, much like the `try` method. Because the `then` function is async, it will automatically return a promise for you to catch:
+The custom function alone is not asynchronous, and therefore `then` is only required because of the other functions, which are promise based. If a promise is used in the validation instance, Pruve will return a promise for you to resolve, either by using the `await` keyword, or by calling `then`.
 
- ```
-pruve('Example string!').string()
-	.then(validated => {
-	 	// the validated Pruve object
-		// validated.values contains the values which have passed validation
-	}).catch(exception => {
-		// ValidationException
-		// exception.errors contains all the validation errors
-	})
- ```
 
- This approach is particularly useful when you are using custom validation functions, which can now return promises, and therefore be asynchronous. Checking the database for a unique email address on registration is a good real-world example.
 
 ## ValidationException
 
-If the `try` or `then` methods are called on a Pruve instance which contains errors, a ValidationException will be thrown. Here are two examples of how this exception might look:
+As mentioned above, if there are pending promises within the validation instance, you must either `await` the result or call `then` on the instance in order for an exception to be thrown. If there are no pending promises, the `passes` method will throw itself:
 
 ```
-pruve(null).string().try()
-// This will throw
-ValidationException {
-	value: null,
-	message: 'Validation failed',
-	errors: [
-		'null is not a string'
-	]
-}
-
-pruve({name: null}).passes({name: "string"}).try()
+pruve({name: null}).passes({name: "string"})
 // This will throw
 ValidationException {
 	value: null,
@@ -94,45 +149,23 @@ ValidationException {
 }
 ```
 
-As shown above, the passes() method returns an object of errors, keyed by the name of the property which has failed validation, whereas single validation methods return only single errors as strings.
-
 ## The Pruve Object
 
 **constructor( _{value}_ )**  
-A helper method is exposed, which allows for the creation of a Pruve validator instance, for ease of access. Of course, it can be named anything you like (check, validate, etc.). Validation methods can be chained on to it.  
+A helper method is exposed, which allows for the creation of a Pruve validator instance. Of course, it can be named anything you like (check, validate, etc.). Validation methods can be chained on to it.  
 **Parameter** _{mixed}_ value  
 **Returns** Pruve  
 ```
-pruve('I am a string!').string()
+pruve('I am a string!').passes(...
 ```
 
 ### Properties
 
-**value** _{mixed}_  
-The value to be validated  
+**values** [public getter] _{object}_  
+The values being validated
 
-**errors** [public getter] _{array|object}_  
-A list of errors for validation failures from either namedErrors or anonymousErrors
-
-**_namedErrors** [private] _{object}_  
-A list of errors of named validation failures.
-
-**_anonymousErrors** [private] _{array}_  
-A list of errors for anonymous validation failures.
-
-**Note:** In almost all scenarios, it is far more reasonable to access errors through the errors getter, rather than through the `_namedErrors` and `_anonymousErrors` properties. It is also important to note that `_namedErrors` is an object whereas `_anonymousErrors` is an array:
-
-Anonymous errors:
-```
-let errors = pruve(123).string().errors
-// ['"123" is not a string']
-```
-
-Named errors:
-```
-let errors = pruve({name: 123}).passes({name: 'string'}).errors
-// { "name": ['"123" is not a string'] }
-```
+**errors** [public getter] _{object}_  
+A list of errors for validation failures
 
 ## Custom Error Messages
 
@@ -166,77 +199,17 @@ let messages = {
 
 This will however only appear once in the errors array. This is a good option of you don't want to go into specifics about why the validation failed.
 
-## Promises & custom validation functions
-
-Pruve also supports custom validation functions. These can be regular functions, which return `false` on fail, functions which return promises, or direct promise objects. As rules, they must be provided within an object. The key can be anything, but should match any custom errors you wish you use for your custom validation functions. See below for usage.
-
-#### Functions
-To trigger a validation failure regular functions must return false. Functions can accept one parameter: the value being validated. Again, see below for usage.
-
-#### Promises
-Promises are handled differently to regular functions. If a function returns a promise, or a promise is passed in directly, there are a few ways to trigger a validation failure. The promise can either resolve to false, reject, or throw. The contents of the rejection or thrown error is irrelevant as it will not be used for any validation error message. Promises must always resolve, be it successfully or otherwise. Unresolved promises will cause the validation process to hang.
-
-
-Here is an example using a custom validation function and a promise. Notice how our functions are properties of the rules object, the keys of which map to the keys in the messages object:
-
-```
-
-const customFunction = value => value > 21;
-
-const customPromise = axios.get('www.example.com/verify-age?age=50')
-	.then(response => response.data === true);
-
-const customFunctionReturningPromise = value => {
-	axios.get('www.example.com/verify-age?age=' + value)
-	.then(response => response.data === true);
-}
-
-let values = {
-	"age": 50
-};
-
-let rules = {
-	"age": ["number", {customFunction, customPromise}]
-};
-
-let messages = {
-	"age.number": "Age must be a number"
-	"age.customFunction": "Age is invalid",
-	"age.customPromise": "Age is invalid",
-};
-
-return pruve(values).passes(rules, messages).then(validated => {
-	// All good!
-}).catch(exception => {
-	//exception.errors
-})
-
-```
-
-The custom function alone is not asynchronous, and therefore `then` is only required because of the promise. If a custom validator is a promise or returns a promise, you must call `then` to ensure all validations are executed before accessing any errors.
-
 ---
 
-## Pruve Methods
+## Methods
 
-**try()**  
-Assess errors and throw a ValidationException if any are present.  
-**Throws** ValidationException  
-**Returns** Pruve
+`passes`  
+Perform validation on the given data  
+**Param** rules {Object} The list of rules  
+**Param** mesages {Object} The list of custom error messages  
+**Throws** {ValidationException }  
+**Returns** {Object|Promise} If there are promises pending, this method will return a promise. If not, it will return the validated data
 
-**then()**  
-Resolve any pending promises and assess errors. Throw a ValidationException if errors are present or any promises resolve false, reject, or throw. This method should always be followed by a .catch()  
-**async**  
-**Returns** Pruve  
-**Throws** ValidationException
-
-### Named Validation
-To perform named validation you must use the passes() method, and provide an object with named properties to validate, along with a ruleset. Named validation means the errors property on the Pruve object and ValidationException will be a keyed object rather than an array. Named validation required more code but provides more verbose errors. It also allows for custom error messages.
-
-**passes()**  
-Validate that the values inside the object pass the validation rules.  
-**Parameter** _{object}_ rules  
-**Returns** Pruve  
 
 ```
 let data = {
@@ -270,197 +243,29 @@ let rules = {
 pruve(data).passes(rules);
 ```
 
-### Anonymous Validation
-Anonymous validator methods simply perform validation on the value given in the Pruve constructor. The errors property these methods set on the Pruve object and ValidationException will be an array rather than a keyed object. Anonymous validators require less code but also provide less verbose errors. Neither do they allow for custom error messages.
+## Validation rules
 
-**string()**  
-Validate that the value is a string.  
-**Returns** Pruve  
+Rules rules can be provided as period-seperated strings, or as arrays. Here is a list of all built-in validators:
 
-```
-pruve('I am a string!').string()
-```
-
-
-**bool()**  
-Validate that the value is a boolean.  
-**Returns** Pruve  
-
-```
-pruve(true).bool()
-```
-
-**number()**  
-Validate that the value is a number.  
-**Returns** Pruve  
-
-```
-pruve(1000).number()
-```
-
-**int()**  
-Validate that the value is an integer.  
-**Returns** Pruve  
-
-```
-pruve(436).int()
-```
-
-**float()**  
-Validate that the value is a float.  
-**Returns** Pruve  
-
-```
-pruve(3.5).float()
-```
-
-**array()**  
-Validate that the value is an array.  
-**Returns** Pruve  
-
-```
-pruve(['foo', 'bar']).array()
-```
-
-**object()**  
-Validate that the value is an object.  
-**Returns** Pruve  
-
-```
-pruve({foo: 'bar'}).object()
-```
-
-
-**date()**  
-Validate that the value is a date object.  
-**Returns** Pruve  
-
-```
-let dateObj = Date('04/08/1994')
-pruve(dateObj).date()
-```
-
-**null()**  
-Validate that the value is null.  
-**Returns** Pruve  
-
-```
-pruve(null).null()
-```
-
-**undefined()**  
-Validate that the value is undefined.  
-**Returns** Pruve  
-
-```
-pruve(undefined).undefined()
-```
-
-**function()**  
-Validate that the value is a function.  
-**Returns** Pruve  
-
-```
-let func = function() {
-	return 'I am a function!';
-}
-pruve(func).function()
-```
-
-**max( _{int}_ )**  
-Validate that the value is less than the given maximum. Applies to numbers, strings (length), arrays (length), and objects (keys).  
-**Param** _{int}_ max  
-**Returns** Pruve  
-
-```
-pruve(3).max(4)
-```
-
-**min( _{int}_ )**  
-Validate that the value is more than the given minimum. Applies to numbers, strings (length), arrays (length), and objects (keys).  
-**Param** _{int}_ min  
-**Returns** Pruve  
-
-```
-pruve(3).min(2)
-```
-
-**defined()**  
-Validate that the value is defined.  
-**Returns** Pruve  
-
-```
-let defined = 'I am a string!'
-pruve(defined).defined()
-```
-
-**email()**  
-Validate that the value is a valid email address.  
-**Returns** Pruve  
-
-```
-let email = 'test@test.com'
-pruve(email).defined()
-
-**has( _{string}_ )**  
-Validate that the object has the given key. Only applicable to objects.  
-**Param** _{string}_  key  
-**Returns** Pruve
-```
-**has( _{string}_ )**  
-Validate that the object has the given key. Only applicable to objects.  
-**Param** _{string}_  key  
-**Returns** Pruve
-
-```
-let obj = {foo: "bar"};
-pruve(obj).has('foo')
-```
-
-**eachHas( _{string}_ )**  
-Validate that all objects in the array have the given key. Only applicable to arrays of objects.  
-**Param** _{string}_  key  
-**Returns** Pruve
-
-```
-let arr = [
-	{foo: "bar"}
-	{foo: "baz"}
-]
-pruve(arr).has('foo')
-```
-
-**pattern( _{string}_ )**  
-Validate that the matches the given pattern.  
-Note
-**Param** _{string}_  pattern  
-**Returns** Pruve
-
-```
-pruve('6 is my age').pattern('^6')
-```
-
-**Note:** when using named validation, pattern does not support period-separated strings. Rules must be provided as an array:
-
-```
-let values = {
-	"name": "Dave"
-}
-
-let rules = {
-	"name": ["string", "max:255", "pattern:[a-zA-Z]"]
-}
-```
-
-**Note 2:** JavaScript uses backslashes ("\\") to escape characters in strings. If your regular expression contains backslashes, you must doube escape them:
-
-```
-let rules = {
-	"name": ["pattern:^[A-Za-z\\d-]+$"]
-}
-```
-
-The alternative is to use a customer function for more complex regular expression tests, as documented above, rather then the pattern helper.
-
-
-More documentation coming soon...
+| Rule        | Description | Notes      |
+| ----------- | ----------- | -----------
+| string      | Validates the value is a string |
+| bool        | Validates the value is a boolean |
+| number      | Validates the value is a number |
+| int         | Validates the value is an integer |
+| float       | Validates the value is a float |
+| array       | Validates the value is an array |
+| object      | Validates the value is an object |
+| date        | Validates the value is a date | This rule checks for an actual Date object, not a string or number representing a date
+| null        | Validates the value is null |
+| undefined   | Validates the value is undefined |
+| function    | Validates the value is a function |
+| max         | Validates the value is less than the given maximum  | The maximum is provided like so: `max:3`. Arrays and strings get tested for length. Numbers get tested for value. Objects get tested for number of properties.
+| min         | Validates the value is greater than the given minimum | The minimum is provided like so: `min:3`. Arrays and strings get tested for length. Numbers get tested for value. Objects get tested for number of properties.
+| between         | Validates the value is between the given minimum and maximum | The minimum and maximum are provided like so: `between:3,6`. Arrays and strings get tested for length. Numbers get tested for value. Objects get tested for number of properties.
+| defined     | Validates the value is defined |
+| email       | Validates the value is a valid email address |
+| promise       | Validates the value is a promise |
+| has         | Validates the value has the given property | This value in this case should be an object.
+| eachHas     | Validates that each item in the value has the given property | This value in this case should be an array of objects.
+| pattern     | Validates that the value passes the given pattern | JavaScript uses backslashes ("\\") to escape characters in strings. If your regular expression contains backslashes, you must double-escape them. The alternative is to use a custom function for more complex regular expression tests, as documented above, rather than the pattern helper.

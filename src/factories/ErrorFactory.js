@@ -1,93 +1,93 @@
 export default class {
-	static stringValidationError(value) {
-		return '"' + value + '" is not a string';
+	static stringValidationError() {
+		return 'Value must be a string';
 	}
 
-	static customMethodValidationError(value) {
-		return 'Invalid value provided';
+	static customMethodValidationError() {
+		return 'Value is invalid';
 	}
 
-	static boolValidationError(value) {
-		return '"' + value + '" is not a boolean';
+	static boolValidationError() {
+		return 'Value must be a boolean';
 	}
 
-	static numberValidationError(value) {
-		return '"' + value + '" is not a number';
+	static numberValidationError() {
+		return 'Value must be a number';
 	}
 
-	static intValidationError(value) {
-		return '"' + value + '" is not an integer';
+	static intValidationError() {
+		return 'Value must be an integer';
 	}
 
-	static floatValidationError(value) {
-		return '"' + value + '" is not a float';
+	static floatValidationError() {
+		return 'Value must be a float';
 	}
 
-	static arrayValidationError(value) {
-		return '"' + value + '" is not an array';
+	static arrayValidationError() {
+		return 'Value must be an array';
 	}
 
-	static objectValidationError(value) {
-		return '"' + value + '" is not an object';
+	static objectValidationError() {
+		return 'Value must be an object';
 	}
 
-	static dateValidationError(value) {
-		return '"' + value + '" is not a date';
+	static dateValidationError() {
+		return 'Value must be a date';
 	}
 
-	static nullValidationError(value) {
-		return '"' + value + '" is not null';
+	static nullValidationError() {
+		return 'Value must be null';
 	}
 
-	static undefinedValidationError(value) {
-		return '"' + value + '" is not undefined';
+	static undefinedValidationError() {
+		return 'Value must be undefined';
 	}
 
-	static functionValidationError(value) {
-		return '"' + value + '" is not a function';
+	static functionValidationError() {
+		return 'Value must be a function';
 	}
 
-	static maxValidationError(value, max) {
-		return '"' + value + '" is greater in length or value than ' + max;
+	static maxValidationError(max) {
+		return 'Value must be less in length or value than ' + max;
 	}
 
-	static minValidationError(value, min) {
-		return '"' + value + '" is less in length or value than ' + min;
+	static minValidationError(min) {
+		return 'Value must be greater in length or value than ' + min;
 	}
 
-	static betweenValidationError(value, min, max) {
-		return 'The length or value of "' + value + '" is not between ' + min + ' and ' + max;
+	static betweenValidationError(min, max) {
+		return 'Value must be between ' + min + ' and ' + max + ' in length or value';
 	}
 
-	static definedValidationError(value) {
-		return '"' + value + '" is not defined';
+	static definedValidationError() {
+		return 'Value must be defined';
 	}
 
-	static emailValidationError(value) {
-		return '"' + value + '" is not a valid email address';
+	static emailValidationError() {
+		return 'Value must be a valid email address';
 	}
 
-	static hasValidationError(value, prop) {
-		return '"' + value + '" does not contain property "' + prop + '"';
+	static hasValidationError(prop) {
+		return 'Value must contain property "' + prop + '"';
 	}
 
-	static eachHasValidationError(value, prop) {
+	static eachHasValidationError(prop) {
 		return 'All children must contain property "' + prop + '"';
 	}
 
-	static fileValidationError(value) {
-		return '"' + value + '" is not a File';
+	static fileValidationError() {
+		return 'Value must be a File';
 	}
 
-	static blobValidationError(value) {
-		return '"' + value + '" is not a Blob';
+	static blobValidationError() {
+		return 'Value must be a Blob';
 	}
 
-	static fileReaderValidationError(value) {
-		return '"' + value + '" is not a FileReader';
+	static fileReaderValidationError() {
+		return 'Value must be a FileReader';
 	}
 
-	static patternValidationError(value) {
-		return '"' + value + '" is not valid';
+	static patternValidationError() {
+		return 'Value is not valid';
 	}
 }
