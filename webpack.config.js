@@ -16,7 +16,7 @@ module.exports = {
   output: {
     library: 'pruve',
     libraryExport: 'default',
-    libraryTarget: 'window',
+    libraryTarget: 'umd',
     globalObject: 'this',
     filename: 'index.js',
     umdNamedDefine: true,
