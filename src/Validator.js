@@ -146,7 +146,7 @@ export default class {
 
                             // If the result is a promise, add it to pending for later resolution
                             if (validatePromise(result) === true) {
-                                this.addPending(key, customValidator, potentialError);
+                                this.addPending(key, result, potentialError);
                                 continue;
             				}
                         } catch (exception) {

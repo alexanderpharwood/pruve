@@ -1,5 +1,10 @@
 const pruve = require('../../dist');
-const expect = require('chai').expect;
+const ValidationException = require('../../dist/exceptions/ValidationException');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe('method: passes', () => {
 	it('should pass with regular validation', () => {
@@ -60,6 +65,12 @@ describe('method: passes', () => {
 		let values = {name: true};
 		let rules = {name: "string"};
 
+		const check = () => {
+			let validated = pruve(values).passes(rules)
+		}
+
+		expect(check).to.throw(TypeError)
+
 		try {
 			const validated = pruve(values).passes(rules);
 		} catch (exception) {
@@ -73,6 +84,12 @@ describe('method: passes', () => {
 		}
 		const values = {name: "Dave"};
 		const rules = {name: [{custom}]};
+
+		const check = () => {
+			let validated = pruve(values).passes(rules)
+		}
+
+		expect(check).to.throw(TypeError)
 
 		try {
 			const validated = pruve(values).passes(rules);
@@ -88,6 +105,12 @@ describe('method: passes', () => {
 		const values = {name: "Dave"};
 		const rules = {name: [{custom}]};
 
+		const check = () => {
+			let validated = pruve(values).passes(rules)
+		}
+
+		expect(check).to.throw();
+
 		try {
 			const validated = pruve(values).passes(rules);
 		} catch (exception) {
@@ -102,6 +125,12 @@ describe('method: passes', () => {
 		const values = {name: "Dave"};
 		const rules = {name: [{custom}]};
 
+		const check = async () => {
+			let validated = await pruve(values).passes(rules)
+		}
+
+		expect(check()).to.be.rejectedWith(TypeError)
+
 		pruve(values).passes(rules).catch(exception => {
 			expect(exception.errors.name).to.contain("Value is invalid");
 		});
@@ -113,6 +142,12 @@ describe('method: passes', () => {
 		});
 		const values = {name: "Dave"};
 		const rules = {name: [{custom}]};
+
+		const check = async () => {
+			let validated = await pruve(values).passes(rules)
+		}
+
+		expect(check()).to.be.rejectedWith(TypeError)
 
 		try {
 			const validated = await pruve(values).passes(rules);
@@ -129,6 +164,12 @@ describe('method: passes', () => {
 		const values = {name: "Dave"};
 		const rules = {name: [{custom}]};
 
+		const check = async () => {
+			let validated = await pruve(values).passes(rules)
+		}
+
+		expect(check()).to.be.rejectedWith(TypeError)
+
 		try {
 			const validated = await pruve(values).passes(rules);
 		} catch (exception) {
@@ -142,6 +183,35 @@ describe('method: passes', () => {
 		});
 		const values = {name: "Dave"};
 		const rules = {name: [{custom}]};
+
+		const check = async () => {
+			let validated = await pruve(values).passes(rules)
+		}
+
+		expect(check()).to.be.rejectedWith(TypeError)
+
+		try {
+			const validated = await pruve(values).passes(rules);
+		} catch (exception) {
+			expect(exception.errors.name).to.contain("Value is invalid");
+		}
+	});
+
+	it('should fail asynchronously with a function returning a promise returning false', async () => {
+		const custom = value => {
+			return new Promise((resolve, reject) => {
+				throw new Error()
+			});
+		}
+
+		let values = {name: "Dave"};
+		let rules = {name: [{custom}]};
+
+		const check = async () => {
+			let validated = await pruve(values).passes(rules)
+		}
+
+		expect(check()).to.be.rejectedWith(TypeError)
 
 		try {
 			const validated = await pruve(values).passes(rules);
