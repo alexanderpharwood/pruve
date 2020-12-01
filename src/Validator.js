@@ -94,23 +94,11 @@ export default class {
      * @return {String|null}
      */
     messageInContext(key, rule) {
-    	for (const message in this.messages) {
-    		const mesageKeySplit = message.split('.');
+        const keyRule = [key, rule].join('.');
+        const keyRuleMessage = this.messages[keyRule];
+        const keyMessage = this.messages[key];
 
-    		const contextMessage = mesageKeySplit.find(function(propertyRule){
-    			return propertyRule === rule;
-    		});
-
-    		if (typeof contextMessage !== 'undefined' && mesageKeySplit[0] === key) {
-    			return this.messages[message];
-    		}
-
-    		if (mesageKeySplit.length === 1 && mesageKeySplit[0] === key) {
-    			return this.messages[message];
-    		}
-    	}
-
-    	return null;
+        return keyRuleMessage || keyMessage || null;
     }
 
     /**

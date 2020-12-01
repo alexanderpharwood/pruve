@@ -227,26 +227,34 @@ describe('method: passes', () => {
 
 		const customAge = value => value < 40;
 
+		const customPet = value => value.length < 10;
+
 		let values = {
 			"name": "Dave",
-			"age": 50
+			"age": 50,
+			"pet": true,
 		};
 
 		let rules = {
 			"name": ["string", {customName}],
-			"age": ["number", {customAge}]
+			"age": ["number", {customAge}],
+			"pet": ["string", {customPet}],
+
 		};
 
 		let messages = {
 			"name.customName": "Name is invalid",
-			"age.customAge": "Age is invalid"
+			"age.customAge": "Age is invalid",
+			"pet.customPet": "Tell me your pet's name",
+			"pet": "Pet is invalid",
 		};
 
-
 		pruve(values).passes(rules, messages).catch(exception => {
-			expect(Object.keys(exception.errors).length).to.equal(2);
-			expect(exception.errors.name).to.include('Name is invalid');
-			expect(exception.errors.age).to.include('Age is invalid');
+			expect(Object.keys(exception.errors).length).to.equal(3);
+			expect(exception.errors.name).to.include("Name is invalid");
+			expect(exception.errors.age).to.include("Age is invalid");
+			expect(exception.errors.pet).to.include("Pet is invalid");
+			expect(exception.errors.pet).to.include("Tell me your pet's name");
 		})
 
 	});
