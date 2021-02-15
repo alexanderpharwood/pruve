@@ -36,11 +36,11 @@ export default class {
      */
     validate() {
     	if (validateObject(this.values) === false && validateArray(this.values) === false ) {
-    		throw new TypeError('Value must be an object or array, with propeties to validate.');
+    		throw new TypeError('Values must be an object or array, with properties to validate.');
     	}
 
     	if (validateObject(this.rules) === false) {
-    		throw new TypeError('Rules must be an object, with propeties to validate.');
+    		throw new TypeError('Rules must be an object, with properties to validate.');
     	}
 
     	for (const prop in this.rules) {
