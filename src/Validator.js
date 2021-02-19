@@ -22,7 +22,8 @@ import validateCustomMethod from './validators/customMethod.js';
 import ErrorFactory from './factories/ErrorFactory.js';
 
 export default class {
-    constructor(addError, addPending, values, rules, messages) {
+    constructor(markChecked, addError, addPending, values, rules, messages) {
+		this.markChecked = markChecked;
         this.addError = addError;
         this.addPending = addPending;
         this.values = values;
@@ -51,18 +52,21 @@ export default class {
     		}
 
 			if (this.values[prop] === null && ruleset.includes('nullable')) {
+				this.markChecked(prop);
     			continue;
     		}
 
     		if (prop === '*') {
     			for (const key in this.values) {
     				this.assessValueAgainstRuleset(this.values[key], key, ruleset);
+					this.markChecked(key);
     			}
 
     			continue;
     		}
 
     		this.assessValueAgainstRuleset(this.values[prop], prop, ruleset);
+			this.markChecked(prop);
     	}
     }
 

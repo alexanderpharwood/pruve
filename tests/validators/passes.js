@@ -292,7 +292,43 @@ describe('method: passes', () => {
 		};
 
 		const validated = pruve(values).passes(rules);
-		expect(validated).to.equal(values);
+		expect(validated).to.eql(values);
+	});
+
+	it('should not return data for which there was no rule (without wildcard)', function () {
+		let values = {
+			"name": "Dave Davidson",
+			"email": "dave@iamdave.com",
+			"dob": new Date('04/08/1994'),
+			"age": 36,
+		};
+
+		let rules = {
+			"name": "string.max:255.min:3",
+		};
+
+		const validated = pruve(values).passes(rules);
+		expect(validated.name).to.equal(values.name);
+		expect(validated).to.not.have.own.property("email");
+		expect(validated).to.not.have.own.property("dob");
+		expect(validated).to.not.have.own.property("age");
+	});
+
+	it('should return all data using wildcard if validation passes', function () {
+		let values = {
+			"name": "Dave Davidson",
+			"email": "dave@iamdave.com",
+			"dob": "June 4, 1989",
+			"city": "Gloucester",
+		};
+
+		let rules = {
+			"*": "string",
+			"name": "max:255.min:3",
+		};
+
+		const validated = pruve(values).passes(rules);
+		expect(validated).to.eql(values);
 	});
 
 	it('should pass with wildcard, using an object of values, if all properties pass validation', function () {
@@ -306,7 +342,7 @@ describe('method: passes', () => {
 		};
 
 		const validated = pruve(values).passes(rules);
-		expect(validated).to.equal(values);
+		expect(validated).to.eql(values);
 	});
 
 
@@ -320,7 +356,8 @@ describe('method: passes', () => {
 		};
 
 		const validated = pruve(values).passes(rules);
-		expect(validated).to.equal(values);
+		expect(validated.name).to.equal(values.name);
+		expect(validated.email).to.equal(values.email);
 	});
 
 	it('should structure the failures object keyed by the property which failed and contain all its failures', function () {

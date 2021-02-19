@@ -8,6 +8,9 @@ class Pruve {
 	 */
 	constructor(values) {
 		this._values = values;
+		this._checked = new Set();
+		this._rules = {};
+		this._messages = {};
 		this._errors = {};
 		this._pending = [];
 	}
@@ -37,6 +40,22 @@ class Pruve {
 	}
 
 	/**
+	 * Get the values that have been validated and do not have errors
+	 */
+	get validated() {
+		const passed = {};
+		for (const key of this._checked) {
+			if (this._valueHasError(key) === false) {
+				if (typeof this._values[key] !== 'undefined') {
+					passed[key] = this._values[key];
+				}
+			}
+		}
+
+		return passed;
+	}
+
+	/**
 	 * Alias for values property
 	 * @return {mixed}
 	 */
@@ -51,7 +70,17 @@ class Pruve {
 	 * @return {Promise|Object}
 	 */
 	passes(rules, messages = []) {
-		const validator = new Validator(this._addError.bind(this), this._addPending.bind(this), this.values, rules, messages);
+		this._rules = rules;
+		this._messages = messages;
+		const validator = new Validator(
+			this._markChecked.bind(this),
+			this._addError.bind(this),
+			this._addPending.bind(this),
+			this.values,
+			this._rules,
+			this._messages
+		);
+
 		validator.validate();
 		if (this._hasPending() === true) {
 			return this._assessAsync();
@@ -77,6 +106,14 @@ class Pruve {
 	}
 
 	/**
+	 * Check if a specific value has an errror
+	 * @param {String} key 
+	 */
+	_valueHasError(key) {
+		return typeof this._errors[key] !== 'undefined';
+	}
+
+	/**
 	 * Add an error to the validation instance
 	 * @param {String} key
 	 * @param {String} error
@@ -92,6 +129,16 @@ class Pruve {
 		for (let key in this._errors) {
 			this._errors[key] = [...new Set(this._errors[key])];
 		}
+	}
+
+	/**
+	 * Mark a value as checked
+	 * @param {String} key
+	 * @param {Promise} promise
+	 * @param {String} potentialError
+	 */
+	_markChecked(key) {
+		this._checked.add(key);
 	}
 
 	/**
@@ -114,7 +161,7 @@ class Pruve {
 			throw new ValidationException(this.values, this.errors);
 		}
 
-		return this.values;
+		return this.validated;
 	}
 
 	/**
