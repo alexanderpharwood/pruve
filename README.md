@@ -249,6 +249,8 @@ Rules rules can be provided as period-seperated strings, or as arrays. Here is a
 
 | Rule        | Description | Notes      |
 | ----------- | ----------- | -----------
+| sometimes   | Only validates if the property is present |
+| nullable    | Validates unless the value is null |
 | string      | Validates the value is a string |
 | bool        | Validates the value is a boolean |
 | number      | Validates the value is a number |
@@ -256,7 +258,7 @@ Rules rules can be provided as period-seperated strings, or as arrays. Here is a
 | float       | Validates the value is a float |
 | array       | Validates the value is an array |
 | object      | Validates the value is an object |
-| date        | Validates the value is a date | This rule checks for an actual Date object, not a string or number representing a date
+| date        | Validates the value is a Date, or something from which a Date is constructable | Due to the complexity of date validation in JavaScript, this implimentation is rudimentary and uses the Date constructor as defined [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date). If date validation is particularly important to you, we recommend using a [library](https://date-fns.org/) and a custom validator function.
 | null        | Validates the value is null |
 | undefined   | Validates the value is undefined |
 | function    | Validates the value is a function |

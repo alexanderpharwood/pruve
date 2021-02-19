@@ -50,6 +50,10 @@ export default class {
     			continue;
     		}
 
+			if (this.values[prop] === null && ruleset.includes('nullable')) {
+    			continue;
+    		}
+
     		if (prop === '*') {
     			for (const key in this.values) {
     				this.assessValueAgainstRuleset(this.values[key], key, ruleset);
