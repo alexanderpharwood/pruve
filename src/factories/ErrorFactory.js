@@ -1,93 +1,111 @@
 export default class {
-	static stringValidationError() {
-		return 'Value must be a string';
-	}
+  static stringValidationError() {
+    return "Value must be a string";
+  }
 
-	static customMethodValidationError() {
-		return 'Value is invalid';
-	}
+  static customMethodValidationError() {
+    return "Value is invalid";
+  }
 
-	static boolValidationError() {
-		return 'Value must be a boolean';
-	}
+  static boolValidationError() {
+    return "Value must be a boolean";
+  }
 
-	static numberValidationError() {
-		return 'Value must be a number';
-	}
+  static numberValidationError() {
+    return "Value must be a number";
+  }
 
-	static intValidationError() {
-		return 'Value must be an integer';
-	}
+  static intValidationError() {
+    return "Value must be an integer";
+  }
 
-	static floatValidationError() {
-		return 'Value must be a float';
-	}
+  static floatValidationError() {
+    return "Value must be a float";
+  }
 
-	static arrayValidationError() {
-		return 'Value must be an array';
-	}
+  static arrayValidationError() {
+    return "Value must be an array";
+  }
 
-	static objectValidationError() {
-		return 'Value must be an object';
-	}
+  static objectValidationError() {
+    return "Value must be an object";
+  }
 
-	static dateValidationError() {
-		return 'Value must be a date';
-	}
+  static dateValidationError() {
+    return "Value must be a date";
+  }
 
-	static nullValidationError() {
-		return 'Value must be null';
-	}
+  static nullValidationError() {
+    return "Value must be null";
+  }
 
-	static undefinedValidationError() {
-		return 'Value must be undefined';
-	}
+  static undefinedValidationError() {
+    return "Value must be undefined";
+  }
 
-	static functionValidationError() {
-		return 'Value must be a function';
-	}
+  static telephoneValidationError() {
+    return "Value must be a valid telephone number";
+  }
 
-	static maxValidationError(max) {
-		return 'Value must be less in length or value than ' + max;
-	}
+  static urlValidationError() {
+    return "Value must be a valid url";
+  }
 
-	static minValidationError(min) {
-		return 'Value must be greater in length or value than ' + min;
-	}
+  static functionValidationError() {
+    return "Value must be a function";
+  }
 
-	static betweenValidationError(min, max) {
-		return 'Value must be between ' + min + ' and ' + max + ' in length or value';
-	}
+  static maxValidationError(max) {
+    return "Value must be less in length or value than " + max;
+  }
 
-	static definedValidationError() {
-		return 'Value must be defined';
-	}
+  static minValidationError(min) {
+    return "Value must be greater in length or value than " + min;
+  }
 
-	static emailValidationError() {
-		return 'Value must be a valid email address';
-	}
+  static betweenValidationError(min, max) {
+    return (
+      "Value must be between " + min + " and " + max + " in length or value"
+    );
+  }
 
-	static hasValidationError(prop) {
-		return 'Value must contain property "' + prop + '"';
-	}
+  static definedValidationError() {
+    return "Value must be defined";
+  }
 
-	static eachHasValidationError(prop) {
-		return 'All children must contain property "' + prop + '"';
-	}
+  static emailValidationError() {
+    return "Value must be a valid email address";
+  }
 
-	static fileValidationError() {
-		return 'Value must be a File';
-	}
+  static hasValidationError(prop) {
+    return 'Value must contain property "' + prop + '"';
+  }
 
-	static blobValidationError() {
-		return 'Value must be a Blob';
-	}
+  static containsValidationError(value) {
+    return 'Value must contain "' + value + '"';
+  }
 
-	static fileReaderValidationError() {
-		return 'Value must be a FileReader';
-	}
+  static eachHasValidationError(prop) {
+    return 'All children must contain property "' + prop + '"';
+  }
 
-	static patternValidationError() {
-		return 'Value is not valid';
-	}
+  static arrayOfValidationError(type) {
+    return 'All items in the list must be of type "' + type + '"';
+  }
+
+  static fileValidationError() {
+    return "Value must be a File";
+  }
+
+  static blobValidationError() {
+    return "Value must be a Blob";
+  }
+
+  static fileReaderValidationError() {
+    return "Value must be a FileReader";
+  }
+
+  static patternValidationError() {
+    return "Value is not valid";
+  }
 }

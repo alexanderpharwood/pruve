@@ -1,3 +1,3 @@
-export default function(value) {
-	return Array.isArray(value) === true;
+export default function (value) {
+  return Array.isArray(value) === true;
 }

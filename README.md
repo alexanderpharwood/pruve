@@ -1,5 +1,3 @@
-
-
 # Pruve
 
 Declarative JavaScript data validation
@@ -9,26 +7,32 @@ Declarative JavaScript data validation
 ![npm bundle size](https://img.shields.io/bundlephobia/min/pruve.svg)
 ![npm](https://img.shields.io/npm/dm/pruve.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/alexanderpharwood/pruve.svg)
-![GitHub issues](https://img.shields.io/github/issues/alexanderpharwood/pruve.svg)  
+![GitHub issues](https://img.shields.io/github/issues/alexanderpharwood/pruve.svg)
 
 Pruve is a declarative data validator that comes with modular validation methods, as well methods for validating large objects with custom rules and error messages.
 
 ## Usage
 
 #### Npm
+
 ```
 npm install pruve
 ```
 
 #### Yarn
+
 ```
 yarn add pruve
 ```
+
 #### Browser (Unpkg)
+
 ```
 <script src="https://unpkg.com/pruve/dist/browser"></script>
 ```
+
 Import the validation constructor:
+
 ```
 // ESM
 import pruve from 'pruve';
@@ -48,12 +52,14 @@ const validateString = require('pruve/validators/string');
 ```
 
 ## Performing validation
+
 The individual validation methods simply return true or false to indicate a pass or a fail. For example:
 
 ```
 validateString('I am a string!') // true
 validateString(3.14) // false
 ```
+
 The pruve constructor, however, is much more powerful. It accepts an object containing the data to be validated. The `passes` method is then called, which accepts an object of rules and then performs the validation. It either throws, or returns the validated data. For example:
 
 ```
@@ -84,11 +90,12 @@ try {
 Pruve also supports custom validation functions. These can be regular functions, which return `false` on fail, functions which return promises, or direct promise objects. As rules, they must be provided within an object. The key can be anything, but should match any custom errors you wish you use for your custom validation functions. See below for usage.
 
 #### Functions
+
 To trigger a validation failure regular functions can either return false or throw. Functions can accept one parameter: the value being validated. Again, see below for usage.
 
 #### Promises
-Promises are handled differently to regular functions. If a function returns a promise, or a promise is passed in directly, there are a few ways to trigger a validation failure. The promise can either resolve to false, reject, or throw. The contents of the rejection or thrown error is irrelevant as it will not be used for any validation error message. Promises must always resolve, be it successfully or otherwise. Unresolved promises will cause the validation process to hang.
 
+Promises are handled differently to regular functions. If a function returns a promise, or a promise is passed in directly, there are a few ways to trigger a validation failure. The promise can either resolve to false, reject, or throw. The contents of the rejection or thrown error is irrelevant as it will not be used for any validation error message. Promises must always resolve, be it successfully or otherwise. Unresolved promises will cause the validation process to hang.
 
 Here is an example using a custom validation function and a promise. Notice how our functions are properties of the rules object, the keys of which map to the keys in the messages object:
 
@@ -129,8 +136,6 @@ return pruve(values).passes(rules, messages).then(validated => {
 
 The custom function alone is not asynchronous, and therefore `then` is only required because of the other functions, which are promise based. If a promise is used in the validation instance, Pruve will return a promise for you to resolve, either by using the `await` keyword, or by calling `then`.
 
-
-
 ## ValidationException
 
 As mentioned above, if there are pending promises within the validation instance, you must either `await` the result or call `then` on the instance in order for an exception to be thrown. If there are no pending promises, the `passes` method will throw itself:
@@ -154,7 +159,8 @@ ValidationException {
 **constructor( _{value}_ )**  
 A helper method is exposed, which allows for the creation of a Pruve validator instance. Of course, it can be named anything you like (check, validate, etc.). Validation methods can be chained on to it.  
 **Parameter** _{mixed}_ value  
-**Returns** Pruve  
+**Returns** Pruve
+
 ```
 pruve('I am a string!').passes(...
 ```
@@ -210,7 +216,6 @@ Perform validation on the given data
 **Throws** {ValidationException }  
 **Returns** {Object|Promise} If there are promises pending, this method will return a promise. If not, it will return the validated data
 
-
 ```
 let data = {
 	"name": "Dave",
@@ -229,6 +234,7 @@ pruve(data).passes(rules);
 ```
 
 You can also do wildcard validation, which will apply to every property in the object being validated, like so:
+
 ```
 let data = {
 	"name": "Dave",
@@ -247,27 +253,31 @@ pruve(data).passes(rules);
 
 Rules rules can be provided as period-seperated strings, or as arrays. Here is a list of all built-in validators:
 
-| Rule        | Description | Notes      |
-| ----------- | ----------- | -----------
-| sometimes   | Only validates if the property is present |
-| nullable    | Validates unless the value is null |
-| string      | Validates the value is a string |
-| bool        | Validates the value is a boolean |
-| number      | Validates the value is a number |
-| int         | Validates the value is an integer |
-| float       | Validates the value is a float |
-| array       | Validates the value is an array |
-| object      | Validates the value is an object |
-| date        | Validates the value is a Date, or something from which a Date is constructable | Due to the complexity of date validation in JavaScript, this implimentation is rudimentary and uses the Date constructor as defined [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date). If date validation is particularly important to you, we recommend using a [library](https://date-fns.org/) and a custom validator function.
-| null        | Validates the value is null |
-| undefined   | Validates the value is undefined |
-| function    | Validates the value is a function |
-| max         | Validates the value is less than the given maximum  | The maximum is provided like so: `max:3`. Arrays and strings get tested for length. Numbers get tested for value. Objects get tested for number of properties.
-| min         | Validates the value is greater than the given minimum | The minimum is provided like so: `min:3`. Arrays and strings get tested for length. Numbers get tested for value. Objects get tested for number of properties.
-| between         | Validates the value is between the given minimum and maximum | The minimum and maximum are provided like so: `between:3,6`. Arrays and strings get tested for length. Numbers get tested for value. Objects get tested for number of properties.
-| defined     | Validates the value is defined |
-| email       | Validates the value is a valid email address |
-| promise       | Validates the value is a promise |
-| has         | Validates the value has the given property | This value in this case should be an object.
-| eachHas     | Validates that each item in the value has the given property | This value in this case should be an array of objects.
-| pattern     | Validates that the value passes the given pattern | JavaScript uses backslashes ("\\") to escape characters in strings. If your regular expression contains backslashes, you must double-escape them. The alternative is to use a custom function for more complex regular expression tests, as documented above, rather than the pattern helper.
+| Rule      | Description                                                                    | Notes                                                                                                                                                                                                                                                                                                                                                                                |
+| --------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| sometimes | Only validates if the property is present                                      |
+| nullable  | Validates unless the value is null                                             |
+| string    | Validates the value is a string                                                |
+| bool      | Validates the value is a boolean                                               |
+| number    | Validates the value is a number                                                |
+| int       | Validates the value is an integer                                              |
+| float     | Validates the value is a float                                                 |
+| array     | Validates the value is an array                                                |
+| object    | Validates the value is an object                                               |
+| date      | Validates the value is a Date, or something from which a Date is constructable | Due to the complexity of date validation in JavaScript, this implimentation is rudimentary and uses the Date constructor as defined [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date). If date validation is particularly important to you, we recommend using a [library](https://date-fns.org/) and a custom validator function.       |
+| null      | Validates the value is null                                                    |
+| undefined | Validates the value is undefined                                               |
+| function  | Validates the value is a function                                              |
+| max       | Validates the value is less than the given maximum                             | The maximum is provided like so: `max:3`. Arrays and strings get tested for length. Numbers get tested for value. Objects get tested for number of properties.                                                                                                                                                                                                                       |
+| min       | Validates the value is greater than the given minimum                          | The minimum is provided like so: `min:3`. Arrays and strings get tested for length. Numbers get tested for value. Objects get tested for number of properties.                                                                                                                                                                                                                       |
+| between   | Validates the value is between the given minimum and maximum                   | The minimum and maximum are provided like so: `between:3,6`. Arrays and strings get tested for length. Numbers get tested for value. Objects get tested for number of properties.                                                                                                                                                                                                    |
+| defined   | Validates the value is defined                                                 |
+| email     | Validates the value is a valid email address                                   |
+| telephone | Validates the value is a valid telephone number                                |
+| url       | Validates the value is a valid url                                             |
+| promise   | Validates the value is a promise                                               |
+| has       | Validates the value has the given property                                     | The value in this case should be an object.                                                                                                                                                                                                                                                                                                                                          |
+| eachHas   | Validates that each item in the value has the given property                   | The value in this case should be an array of objects. `eachHas:foo`                                                                                                                                                                                                                                                                                                                  |
+| contains  | Validates the value contains the given value                                   | The value in this case should be either an array or a string. `contains:foo`. It is safer to use array syntax for this check as the string syntax splits on periods.                                                                                                                                                                                                                 |
+| arrayOf   | Validates that each item in the list is of the given type                      | The value in this case should be an array. Valid types are: "object", "string", "number", "array". `arrayOf:string`. If you require more sophisticated type checking, use a custom validation method.                                                                                                                                                                                |
+| pattern   | Validates that the value passes the given pattern                              | JavaScript uses backslashes ("\\") to escape characters in strings. If your regular expression contains backslashes, you must double-escape them. The alternative is to use a custom function for more complex regular expression tests, as documented above, rather than the pattern helper. It is safer to use array syntax for this check as the string syntax splits on periods. |
