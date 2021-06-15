@@ -23,7 +23,6 @@ describe("validator: contains", function () {
     try {
       const validated = await pruve(values).passes(rules);
     } catch (exception) {
-      console.log(exception);
       expect(exception.errors.contains).to.include(
         'Value must contain "melon"'
       );
@@ -37,7 +36,6 @@ describe("validator: contains", function () {
     try {
       const validated = await pruve(values).passes(rules);
     } catch (exception) {
-      console.log(exception);
       expect(exception.errors.contains).to.include(
         'Value must contain "melon"'
       );
